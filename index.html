@@ -1,222 +1,195 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>🕌 Трекер Намаза</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🕌 Намаз — мой день</title>
 
 <meta name="theme-color" content="#0f2027">
-<link rel="manifest" href="manifest.json">
 
 <style>
-:root{
-  --glass: rgba(255,255,255,0.15);
-  --glass-border: rgba(255,255,255,0.25);
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color: #fff;
+  min-height: 100vh;
 }
 
-*{margin:0;padding:0;box-sizing:border-box}
-
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
 }
 
-.app{
-  width:100%;
-  max-width:430px;
-  padding:20px 16px 40px;
+#dayMessage {
+  text-align: center;
+  font-size: 15px;
+  opacity: .9;
+  margin-bottom: 15px;
 }
 
-h1{
-  text-align:center;
-  font-size:22px;
-  margin-bottom:16px;
-  font-weight:600;
+.card {
+  background: rgba(255,255,255,0.08);
+  padding: 16px;
+  border-radius: 18px;
+  margin-bottom: 16px;
 }
 
-.card{
-  background:var(--glass);
-  backdrop-filter:blur(14px);
-  border:1px solid var(--glass-border);
-  border-radius:22px;
-  padding:18px;
-  margin-bottom:14px;
+.prayer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 14px;
+  transition: all .3s ease;
 }
 
-.status{
-  text-align:center;
-  font-size:14px;
-  opacity:.9;
-  margin-bottom:8px;
+.prayer.past {
+  opacity: 0.4;
 }
 
-.next{
-  text-align:center;
-  font-size:15px;
-  line-height:1.4;
+.prayer.next {
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 14px rgba(255,215,0,.4);
 }
 
-.progress{
-  text-align:center;
-  margin-top:6px;
-  font-size:14px;
+.prayer-name {
+  font-weight: 600;
+  font-size: 16px;
 }
 
-.prayer{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px;
-  border-radius:16px;
-  background:rgba(255,255,255,.12);
-  margin-bottom:10px;
-  transition:.3s;
+.prayer-time {
+  opacity: .85;
 }
 
-.prayer.past{opacity:.45}
-
-.prayer.next{
-  outline:2px solid #ffd700;
-  box-shadow:0 0 12px rgba(255,215,0,.6);
+button {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  background: linear-gradient(45deg,#28a745,#20c997);
+  color: #fff;
+  font-weight: 600;
+  transition: transform .2s;
 }
 
-.prayer-name{font-weight:600}
-.prayer-time{font-size:13px;opacity:.8}
-
-button{
-  border:none;
-  border-radius:20px;
-  padding:8px 14px;
-  background:linear-gradient(45deg,#28a745,#20c997);
-  color:#fff;
-  font-weight:600;
-  transition:.2s;
+button:active {
+  transform: scale(.95);
 }
 
-button.checked{
-  background:linear-gradient(45deg,#ffc107,#ff9800);
+button.checked {
+  background: linear-gradient(45deg,#ffc107,#ff9800);
 }
 
-button:active{transform:scale(.95)}
-
-.refresh{
-  width:100%;
-  padding:14px;
-  border-radius:22px;
-  margin-top:8px;
-  background:linear-gradient(45deg,#007bff,#0056b3);
-  font-size:15px;
+#progress {
+  text-align: center;
+  font-size: 15px;
+  margin-top: 10px;
 }
 </style>
 </head>
 
 <body>
-<div class="app">
 
-<h1>🕌 Трекер Намаза</h1>
-
-<div class="card">
-  <div class="status" id="status">Загрузка…</div>
-  <div class="next" id="nextPrayer"></div>
-  <div class="progress" id="progress"></div>
-</div>
+<h1>🕌 Мой намаз</h1>
+<div id="dayMessage"></div>
 
 <div class="card" id="times"></div>
 
-<button class="refresh" onclick="loadTimes()">🔄 Обновить</button>
-
-</div>
+<div id="progress"></div>
 
 <script>
-const prayers=["Fajr","Dhuhr","Asr","Maghrib","Isha"];
-const names={
-  Fajr:"Фаджр ☀️",
-  Dhuhr:"Зухр 🌞",
-  Asr:"Аср 🌅",
-  Maghrib:"Магриб 🌇",
-  Isha:"Иша 🌙"
-};
+const prayers = [
+  { key:'Fajr', name:'Фаджр ☀️' },
+  { key:'Dhuhr', name:'Зухр 🌞' },
+  { key:'Asr', name:'Аср 🌅' },
+  { key:'Maghrib', name:'Магриб 🌇' },
+  { key:'Isha', name:'Иша 🌙' }
+];
 
-let todayTimes={};
+let todayTimes = {};
 
-async function loadTimes(){
-  const status=document.getElementById("status");
-  status.textContent="⏳ Загрузка времён намаза…";
-  try{
-    const res=await fetch("https://api.aladhan.com/v1/timingsByCity?city=Istanbul&country=Turkey&method=13");
-    const data=await res.json();
-    todayTimes=data.data.timings;
-    render();
-    status.textContent="📅 Сегодня";
-  }catch{
-    status.textContent="Ошибка загрузки";
-  }
+function getTodayKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' +
+    String(d.getDate()).padStart(2,'0');
 }
 
-function render(){
-  const now=new Date();
-  const today=now.toISOString().split("T")[0];
-  let html="";
-  let next=false;
-  let done=0;
-
-  prayers.forEach(p=>{
-    const [h,m]=todayTimes[p].split(":");
-    const t=new Date();t.setHours(h,m,0);
-    let cls="prayer";
-    if(t<now)cls+=" past";
-    else if(!next){cls+=" next";next=true}
-
-    const key=today+"_"+p;
-    const checked=localStorage.getItem(key);
-    if(checked)done++;
-
-    html+=`
-    <div class="${cls}">
-      <div>
-        <div class="prayer-name">${names[p]}</div>
-        <div class="prayer-time">${todayTimes[p]}</div>
-      </div>
-      <button class="${checked?"checked":""}" onclick="toggle('${key}',this)">
-        ${checked?"✓":"Отметить"}
-      </button>
-    </div>`;
-  });
-
-  document.getElementById("times").innerHTML=html;
-  document.getElementById("progress").innerHTML=`📿 Сегодня выполнено: <b>${done} из 5</b>`;
-  nextPrayer();
-}
-
-function toggle(key,btn){
-  if(localStorage.getItem(key)){
-    localStorage.removeItem(key);
-    btn.classList.remove("checked");
-    btn.textContent="Отметить";
-  }else{
-    localStorage.setItem(key,"1");
-    btn.classList.add("checked");
-    btn.textContent="✓";
-  }
+async function loadTimes() {
+  const res = await fetch(
+    'https://api.aladhan.com/v1/timingsByCity?city=Istanbul&country=Turkey&method=13'
+  );
+  const data = await res.json();
+  todayTimes = data.data.timings;
   render();
 }
 
-function nextPrayer(){
-  const now=new Date();
-  for(let p of prayers){
-    const [h,m]=todayTimes[p].split(":");
-    const t=new Date();t.setHours(h,m,0);
-    if(t>now){
-      const diff=Math.floor((t-now)/60000);
-      document.getElementById("nextPrayer").innerHTML=
-      `🕋 Следующий: <b>${names[p]}</b><br>через ${Math.floor(diff/60)}ч ${diff%60}м`;
-      return;
+function render() {
+  const now = new Date();
+  const today = getTodayKey();
+  let nextFound = false;
+  let done = 0;
+  let html = '';
+
+  prayers.forEach(p => {
+    const time = todayTimes[p.key];
+    const [h,m] = time.split(':');
+    const t = new Date();
+    t.setHours(h,m,0);
+
+    let cls = 'prayer';
+    if (t < now) cls += ' past';
+    else if (!nextFound) {
+      cls += ' next';
+      nextFound = true;
     }
+
+    const key = `${today}_${p.key}`;
+    const checked = localStorage.getItem(key) === '1';
+    if (checked) done++;
+
+    html += `
+      <div class="${cls}">
+        <div>
+          <div class="prayer-name">${p.name}</div>
+          <div class="prayer-time">${time}</div>
+        </div>
+        <button class="${checked?'checked':''}"
+          onclick="toggle('${key}', this)">
+          ${checked ? '✓' : 'Отметить'}
+        </button>
+      </div>
+    `;
+  });
+
+  document.getElementById('times').innerHTML = html;
+  document.getElementById('progress').innerHTML =
+    `📿 Сегодня: <b>${done} из 5</b>`;
+
+  document.getElementById('dayMessage').innerText =
+    done === 0
+      ? '🌙 Новый день. Пусть Аллах примет твои намерения'
+      : '🤍 Продолжай, шаг за шагом';
+}
+
+function toggle(key, btn) {
+  if (localStorage.getItem(key)) {
+    localStorage.removeItem(key);
+    btn.classList.remove('checked');
+    btn.innerText = 'Отметить';
+  } else {
+    localStorage.setItem(key,'1');
+    btn.classList.add('checked');
+    btn.innerText = '✓';
   }
+  render();
 }
 
 loadTimes();
