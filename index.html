@@ -21,56 +21,53 @@ body {
     min-height: 100vh;
 }
 
-h1 {
-    text-align: center;
-    margin-bottom: 15px;
-}
+h1 { text-align:center; margin-bottom:15px; }
 
 #status, #nextPrayer, #progress {
-    text-align: center;
-    margin-bottom: 12px;
+    text-align:center;
+    margin-bottom:12px;
 }
 
 #times {
     background: rgba(255,255,255,0.08);
-    padding: 15px;
-    border-radius: 16px;
+    padding:15px;
+    border-radius:16px;
 }
 
 .prayer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px;
-    margin-bottom: 12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px;
+    margin-bottom:12px;
     background: rgba(255,255,255,0.06);
-    border-radius: 12px;
-    transition: all .3s;
+    border-radius:12px;
+    transition:.3s;
 }
 
-.prayer.past { opacity: 0.45; }
+.prayer.past { opacity:.45; }
 
 .prayer.next {
-    border: 2px solid #ffd700;
-    box-shadow: 0 0 15px rgba(255,215,0,.5);
+    border:2px solid #ffd700;
+    box-shadow:0 0 15px rgba(255,215,0,.5);
 }
 
-.prayer-name { font-size: 17px; font-weight: 600; }
-.prayer-time { opacity: .85; }
+.prayer-name { font-size:17px; font-weight:600; }
+.prayer-time { opacity:.85; }
 
 button {
-    border: none;
-    padding: 10px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    background: linear-gradient(45deg,#28a745,#20c997);
-    color: #fff;
-    font-weight: 600;
+    border:none;
+    padding:10px 16px;
+    border-radius:20px;
+    cursor:pointer;
+    background:linear-gradient(45deg,#28a745,#20c997);
+    color:#fff;
+    font-weight:600;
 }
 
 button.checked {
-    background: linear-gradient(45deg,#ffc107,#ff9800);
-    animation: pop .3s ease;
+    background:linear-gradient(45deg,#ffc107,#ff9800);
+    animation:pop .3s ease;
 }
 
 @keyframes pop {
@@ -80,84 +77,59 @@ button.checked {
 }
 
 #refresh {
-    width: 100%;
-    margin-top: 15px;
-    padding: 14px;
-    font-size: 15px;
-    background: linear-gradient(45deg,#007bff,#0056b3);
-}
-</style>
-    /* Модальное окно */
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
+    width:100%;
+    margin-top:15px;
+    padding:14px;
+    font-size:15px;
+    background:linear-gradient(45deg,#007bff,#0056b3);
 }
 
-.modal.hidden {
-    display: none;
+/* ===== МОДАЛЬНОЕ ОКНО ===== */
+
+.modal {
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:999;
 }
+
+.modal.hidden { display:none; }
 
 .modal-content {
-    background: linear-gradient(135deg,#1c2b36,#2c5364);
-    border-radius: 20px;
-    padding: 30px 25px;
-    text-align: center;
-    width: 85%;
-    max-width: 320px;
-    animation: fadeIn .4s ease;
+    background:linear-gradient(135deg,#1c2b36,#2c5364);
+    border-radius:20px;
+    padding:30px 25px;
+    text-align:center;
+    width:85%;
+    max-width:320px;
+    animation:fadeIn .4s ease;
 }
 
-.dua-icon {
-    font-size: 32px;
-    margin-bottom: 10px;
-}
+.dua-icon { font-size:32px; margin-bottom:10px; }
+.dua-text { font-size:22px; margin-bottom:8px; }
+.dua-sub { font-size:14px; opacity:.85; margin-bottom:20px; }
 
-.dua-text {
-    font-size: 22px;
-    margin-bottom: 8px;
-}
-
-.dua-sub {
-    font-size: 14px;
-    opacity: 0.85;
-    margin-bottom: 20px;
-}
-
-.modal button {
-    background: linear-gradient(45deg,#28a745,#20c997);
-    border: none;
-    border-radius: 25px;
-    padding: 12px 22px;
-    color: #fff;
-    font-weight: 600;
-    font-size: 15px;
-}
 @keyframes fadeIn {
-    from { transform: scale(.9); opacity: 0 }
-    to { transform: scale(1); opacity: 1 }
+    from { transform:scale(.9); opacity:0 }
+    to { transform:scale(1); opacity:1 }
 }
-    
+</style>
 </head>
+
+<body>
+
 <!-- Модальное окно дуа -->
 <div id="duaModal" class="modal hidden">
   <div class="modal-content">
     <div class="dua-icon">🤍</div>
-    <div class="dua-text">
-      اللَّهُمَّ تَقَبَّلْ مِنَّا
-    </div>
-    <div class="dua-sub">
-      О Аллах, прими от нас
-    </div>
+    <div class="dua-text">اللَّهُمَّ تَقَبَّلْ مِنَّا</div>
+    <div class="dua-sub">О Аллах, прими от нас</div>
     <button onclick="closeModal()">Аминь 🤲</button>
   </div>
 </div>
-    
-<body>
 
 <h1>🕌 Трекер Намаза</h1>
 <div id="status">Загрузка…</div>
@@ -168,137 +140,81 @@ button.checked {
 <button id="refresh" onclick="loadTimes()">🔄 Обновить</button>
 
 <script>
-const prayers = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
-const prayerNames = {
-    Fajr:'Фаджр ☀️',
-    Dhuhr:'Зухр 🌞',
-    Asr:'Аср 🌅',
-    Maghrib:'Магриб 🌇',
-    Isha:'Иша 🌙'
+const prayers=['Fajr','Dhuhr','Asr','Maghrib','Isha'];
+const prayerNames={
+Fajr:'Фаджр ☀️',Dhuhr:'Зухр 🌞',Asr:'Аср 🌅',Maghrib:'Магриб 🌇',Isha:'Иша 🌙'
 };
 
-let todayTimes = {};
-let city = localStorage.getItem('city') || 'Istanbul';
+let todayTimes={};
+let city='Istanbul';
 
-async function loadTimes() {
-    const status = document.getElementById('status');
-    status.innerText = '⏳ Загрузка времён намаза…';
-
-    try {
-        const url = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Turkey&method=13`;
-        const response = await fetch(url);
-
-        if (!response.ok) throw new Error('API error');
-
-        const data = await response.json();
-        todayTimes = data.data.timings;
-
-        updateDisplay();
-        status.innerText = '📅 Сегодня';
-    } catch (e) {
-        status.innerText = '❌ Ошибка загрузки';
-        console.error(e);
-    }
+function showModal(){
+    document.getElementById('duaModal').classList.remove('hidden');
+}
+function closeModal(){
+    document.getElementById('duaModal').classList.add('hidden');
 }
 
-function updateDisplay() {
-    const times = document.getElementById('times');
-    const now = new Date();
-    const today = now.toISOString().split('T')[0];
-    let html = '';
-    let nextFound = false;
+async function loadTimes(){
+    const r=await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Turkey&method=13`);
+    const d=await r.json();
+    todayTimes=d.data.timings;
+    updateDisplay();
+}
 
-    prayers.forEach(p => {
-        const timeStr = todayTimes[p];
-        let cls = 'prayer';
+function updateDisplay(){
+    const now=new Date();
+    const today=now.toISOString().split('T')[0];
+    let html='',next=false;
 
-        const [h,m] = timeStr.split(':');
-        const t = new Date();
-        t.setHours(h,m,0);
+    prayers.forEach(p=>{
+        const [h,m]=todayTimes[p].split(':');
+        const t=new Date(); t.setHours(h,m,0);
+        let cls='prayer';
+        if(t<now)cls+=' past';
+        else if(!next){cls+=' next'; next=true;}
 
-        if (t < now) cls += ' past';
-        else if (!nextFound) {
-            cls += ' next';
-            nextFound = true;
-        }
+        const key=`${today}_${p}`;
+        const checked=localStorage.getItem(key)==='checked';
 
-        const key = `${today}_${p}`;
-        const checked = localStorage.getItem(key) === 'checked';
-
-        html += `
+        html+=`
         <div class="${cls}">
             <div>
                 <div class="prayer-name">${prayerNames[p]}</div>
-                <div class="prayer-time">${timeStr}</div>
+                <div class="prayer-time">${todayTimes[p]}</div>
             </div>
             <button class="${checked?'checked':''}"
-                onclick="togglePrayer('${today}','${p}',this)">
-                ${checked?'✓ Выполнен':'Отметить'}
+            onclick="togglePrayer('${today}','${p}',this)">
+            ${checked?'✓ Выполнен':'Отметить'}
             </button>
         </div>`;
     });
 
-    times.innerHTML = html;
-    updateNextPrayer();
+    times.innerHTML=html;
     updateProgress(today);
 }
 
-function togglePrayer(date, prayer, btn) {
-    const key = `${date}_${prayer}`;
-    if (localStorage.getItem(key)) {
-        localStorage.removeItem(key);
-        btn.classList.remove('checked');
-        btn.innerText = 'Отметить';
-    } else {
-        localStorage.setItem(key,'checked');
-        btn.classList.add('checked');
-        btn.innerText = '✓ Выполнен';
-    }
+function togglePrayer(d,p,btn){
+    const k=`${d}_${p}`;
+    localStorage.getItem(k)?localStorage.removeItem(k):localStorage.setItem(k,'checked');
+    updateDisplay();
 
-    updateProgress(date);
-
-    let done = 0;
-    prayers.forEach(p=>{
-        if(localStorage.getItem(`${date}_${p}`)==='checked') done++;
+    let done=0;
+    prayers.forEach(x=>{
+        if(localStorage.getItem(`${d}_${x}`)==='checked')done++;
     });
-
-    if(done===5){
-        setTimeout(()=>{
-            alert('🤍 Аллахумма такаббаль منا');
-        },300);
-    }
+    if(done===5)setTimeout(showModal,300);
 }
 
-function updateNextPrayer() {
-    const now = new Date();
-    for (let p of prayers) {
-        const [h,m] = todayTimes[p].split(':');
-        const t = new Date();
-        t.setHours(h,m,0);
-        if (t > now) {
-            const diff = Math.floor((t-now)/60000);
-            document.getElementById('nextPrayer').innerHTML =
-                `🕋 Следующий: <b>${prayerNames[p]}</b><br>через ${Math.floor(diff/60)}ч ${diff%60}м`;
-            return;
-        }
-    }
-}
-
-function updateProgress(today){
-    let done = 0;
+function updateProgress(d){
+    let done=0;
     prayers.forEach(p=>{
-        if(localStorage.getItem(`${today}_${p}`)==='checked') done++;
+        if(localStorage.getItem(`${d}_${p}`)==='checked')done++;
     });
-    document.getElementById('progress').innerHTML =
-        `📿 Сегодня выполнено: <b>${done} из 5</b>`;
+    progress.innerHTML=`📿 Сегодня выполнено: <b>${done} из 5</b>`;
 }
 
 loadTimes();
-setInterval(loadTimes, 30*60*1000);
-
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js');
-}
 </script>
 
 </body>
