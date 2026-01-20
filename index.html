@@ -1,217 +1,222 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>🕌 Трекер Намаза</title>
 
-<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f2027">
+<link rel="manifest" href="manifest.json">
 
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 20px;
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color: #fff;
-    min-height: 100vh;
+:root{
+  --glass: rgba(255,255,255,0.15);
+  --glass-border: rgba(255,255,255,0.25);
 }
 
-h1 { text-align:center; margin-bottom:15px; }
+*{margin:0;padding:0;box-sizing:border-box}
 
-#status, #nextPrayer, #progress {
-    text-align:center;
-    margin-bottom:12px;
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
 }
 
-#times {
-    background: rgba(255,255,255,0.08);
-    padding:15px;
-    border-radius:16px;
+.app{
+  width:100%;
+  max-width:430px;
+  padding:20px 16px 40px;
 }
 
-.prayer {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:14px;
-    margin-bottom:12px;
-    background: rgba(255,255,255,0.06);
-    border-radius:12px;
-    transition:.3s;
+h1{
+  text-align:center;
+  font-size:22px;
+  margin-bottom:16px;
+  font-weight:600;
 }
 
-.prayer.past { opacity:.45; }
-
-.prayer.next {
-    border:2px solid #ffd700;
-    box-shadow:0 0 15px rgba(255,215,0,.5);
+.card{
+  background:var(--glass);
+  backdrop-filter:blur(14px);
+  border:1px solid var(--glass-border);
+  border-radius:22px;
+  padding:18px;
+  margin-bottom:14px;
 }
 
-.prayer-name { font-size:17px; font-weight:600; }
-.prayer-time { opacity:.85; }
-
-button {
-    border:none;
-    padding:10px 16px;
-    border-radius:20px;
-    cursor:pointer;
-    background:linear-gradient(45deg,#28a745,#20c997);
-    color:#fff;
-    font-weight:600;
+.status{
+  text-align:center;
+  font-size:14px;
+  opacity:.9;
+  margin-bottom:8px;
 }
 
-button.checked {
-    background:linear-gradient(45deg,#ffc107,#ff9800);
-    animation:pop .3s ease;
+.next{
+  text-align:center;
+  font-size:15px;
+  line-height:1.4;
 }
 
-@keyframes pop {
-    0%{transform:scale(1)}
-    50%{transform:scale(1.15)}
-    100%{transform:scale(1)}
+.progress{
+  text-align:center;
+  margin-top:6px;
+  font-size:14px;
 }
 
-#refresh {
-    width:100%;
-    margin-top:15px;
-    padding:14px;
-    font-size:15px;
-    background:linear-gradient(45deg,#007bff,#0056b3);
+.prayer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(255,255,255,.12);
+  margin-bottom:10px;
+  transition:.3s;
 }
 
-/* ===== МОДАЛЬНОЕ ОКНО ===== */
+.prayer.past{opacity:.45}
 
-.modal {
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.6);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:999;
+.prayer.next{
+  outline:2px solid #ffd700;
+  box-shadow:0 0 12px rgba(255,215,0,.6);
 }
 
-.modal.hidden { display:none; }
+.prayer-name{font-weight:600}
+.prayer-time{font-size:13px;opacity:.8}
 
-.modal-content {
-    background:linear-gradient(135deg,#1c2b36,#2c5364);
-    border-radius:20px;
-    padding:30px 25px;
-    text-align:center;
-    width:85%;
-    max-width:320px;
-    animation:fadeIn .4s ease;
+button{
+  border:none;
+  border-radius:20px;
+  padding:8px 14px;
+  background:linear-gradient(45deg,#28a745,#20c997);
+  color:#fff;
+  font-weight:600;
+  transition:.2s;
 }
 
-.dua-icon { font-size:32px; margin-bottom:10px; }
-.dua-text { font-size:22px; margin-bottom:8px; }
-.dua-sub { font-size:14px; opacity:.85; margin-bottom:20px; }
+button.checked{
+  background:linear-gradient(45deg,#ffc107,#ff9800);
+}
 
-@keyframes fadeIn {
-    from { transform:scale(.9); opacity:0 }
-    to { transform:scale(1); opacity:1 }
+button:active{transform:scale(.95)}
+
+.refresh{
+  width:100%;
+  padding:14px;
+  border-radius:22px;
+  margin-top:8px;
+  background:linear-gradient(45deg,#007bff,#0056b3);
+  font-size:15px;
 }
 </style>
 </head>
 
 <body>
-
-<!-- Модальное окно дуа -->
-<div id="duaModal" class="modal hidden">
-  <div class="modal-content">
-    <div class="dua-icon">🤍</div>
-    <div class="dua-text">اللَّهُمَّ تَقَبَّلْ مِنَّا</div>
-    <div class="dua-sub">О Аллах, прими от нас</div>
-    <button onclick="closeModal()">Аминь 🤲</button>
-  </div>
-</div>
+<div class="app">
 
 <h1>🕌 Трекер Намаза</h1>
-<div id="status">Загрузка…</div>
-<div id="nextPrayer"></div>
-<div id="progress"></div>
 
-<div id="times"></div>
-<button id="refresh" onclick="loadTimes()">🔄 Обновить</button>
+<div class="card">
+  <div class="status" id="status">Загрузка…</div>
+  <div class="next" id="nextPrayer"></div>
+  <div class="progress" id="progress"></div>
+</div>
+
+<div class="card" id="times"></div>
+
+<button class="refresh" onclick="loadTimes()">🔄 Обновить</button>
+
+</div>
 
 <script>
-const prayers=['Fajr','Dhuhr','Asr','Maghrib','Isha'];
-const prayerNames={
-Fajr:'Фаджр ☀️',Dhuhr:'Зухр 🌞',Asr:'Аср 🌅',Maghrib:'Магриб 🌇',Isha:'Иша 🌙'
+const prayers=["Fajr","Dhuhr","Asr","Maghrib","Isha"];
+const names={
+  Fajr:"Фаджр ☀️",
+  Dhuhr:"Зухр 🌞",
+  Asr:"Аср 🌅",
+  Maghrib:"Магриб 🌇",
+  Isha:"Иша 🌙"
 };
 
 let todayTimes={};
-let city='Istanbul';
-
-function showModal(){
-    document.getElementById('duaModal').classList.remove('hidden');
-}
-function closeModal(){
-    document.getElementById('duaModal').classList.add('hidden');
-}
 
 async function loadTimes(){
-    const r=await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=Turkey&method=13`);
-    const d=await r.json();
-    todayTimes=d.data.timings;
-    updateDisplay();
+  const status=document.getElementById("status");
+  status.textContent="⏳ Загрузка времён намаза…";
+  try{
+    const res=await fetch("https://api.aladhan.com/v1/timingsByCity?city=Istanbul&country=Turkey&method=13");
+    const data=await res.json();
+    todayTimes=data.data.timings;
+    render();
+    status.textContent="📅 Сегодня";
+  }catch{
+    status.textContent="Ошибка загрузки";
+  }
 }
 
-function updateDisplay(){
-    const now=new Date();
-    const today=now.toISOString().split('T')[0];
-    let html='',next=false;
+function render(){
+  const now=new Date();
+  const today=now.toISOString().split("T")[0];
+  let html="";
+  let next=false;
+  let done=0;
 
-    prayers.forEach(p=>{
-        const [h,m]=todayTimes[p].split(':');
-        const t=new Date(); t.setHours(h,m,0);
-        let cls='prayer';
-        if(t<now)cls+=' past';
-        else if(!next){cls+=' next'; next=true;}
+  prayers.forEach(p=>{
+    const [h,m]=todayTimes[p].split(":");
+    const t=new Date();t.setHours(h,m,0);
+    let cls="prayer";
+    if(t<now)cls+=" past";
+    else if(!next){cls+=" next";next=true}
 
-        const key=`${today}_${p}`;
-        const checked=localStorage.getItem(key)==='checked';
+    const key=today+"_"+p;
+    const checked=localStorage.getItem(key);
+    if(checked)done++;
 
-        html+=`
-        <div class="${cls}">
-            <div>
-                <div class="prayer-name">${prayerNames[p]}</div>
-                <div class="prayer-time">${todayTimes[p]}</div>
-            </div>
-            <button class="${checked?'checked':''}"
-            onclick="togglePrayer('${today}','${p}',this)">
-            ${checked?'✓ Выполнен':'Отметить'}
-            </button>
-        </div>`;
-    });
+    html+=`
+    <div class="${cls}">
+      <div>
+        <div class="prayer-name">${names[p]}</div>
+        <div class="prayer-time">${todayTimes[p]}</div>
+      </div>
+      <button class="${checked?"checked":""}" onclick="toggle('${key}',this)">
+        ${checked?"✓":"Отметить"}
+      </button>
+    </div>`;
+  });
 
-    times.innerHTML=html;
-    updateProgress(today);
+  document.getElementById("times").innerHTML=html;
+  document.getElementById("progress").innerHTML=`📿 Сегодня выполнено: <b>${done} из 5</b>`;
+  nextPrayer();
 }
 
-function togglePrayer(d,p,btn){
-    const k=`${d}_${p}`;
-    localStorage.getItem(k)?localStorage.removeItem(k):localStorage.setItem(k,'checked');
-    updateDisplay();
-
-    let done=0;
-    prayers.forEach(x=>{
-        if(localStorage.getItem(`${d}_${x}`)==='checked')done++;
-    });
-    if(done===5)setTimeout(showModal,300);
+function toggle(key,btn){
+  if(localStorage.getItem(key)){
+    localStorage.removeItem(key);
+    btn.classList.remove("checked");
+    btn.textContent="Отметить";
+  }else{
+    localStorage.setItem(key,"1");
+    btn.classList.add("checked");
+    btn.textContent="✓";
+  }
+  render();
 }
 
-function updateProgress(d){
-    let done=0;
-    prayers.forEach(p=>{
-        if(localStorage.getItem(`${d}_${p}`)==='checked')done++;
-    });
-    progress.innerHTML=`📿 Сегодня выполнено: <b>${done} из 5</b>`;
+function nextPrayer(){
+  const now=new Date();
+  for(let p of prayers){
+    const [h,m]=todayTimes[p].split(":");
+    const t=new Date();t.setHours(h,m,0);
+    if(t>now){
+      const diff=Math.floor((t-now)/60000);
+      document.getElementById("nextPrayer").innerHTML=
+      `🕋 Следующий: <b>${names[p]}</b><br>через ${Math.floor(diff/60)}ч ${diff%60}м`;
+      return;
+    }
+  }
 }
 
 loadTimes();
