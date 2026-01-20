@@ -87,8 +87,76 @@ button.checked {
     background: linear-gradient(45deg,#007bff,#0056b3);
 }
 </style>
-</head>
+    /* Модальное окно */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
 
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: linear-gradient(135deg,#1c2b36,#2c5364);
+    border-radius: 20px;
+    padding: 30px 25px;
+    text-align: center;
+    width: 85%;
+    max-width: 320px;
+    animation: fadeIn .4s ease;
+}
+
+.dua-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.dua-text {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.dua-sub {
+    font-size: 14px;
+    opacity: 0.85;
+    margin-bottom: 20px;
+}
+
+.modal button {
+    background: linear-gradient(45deg,#28a745,#20c997);
+    border: none;
+    border-radius: 25px;
+    padding: 12px 22px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+}
+@keyframes fadeIn {
+    from { transform: scale(.9); opacity: 0 }
+    to { transform: scale(1); opacity: 1 }
+}
+    
+</head>
+<!-- Модальное окно дуа -->
+<div id="duaModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="dua-icon">🤍</div>
+    <div class="dua-text">
+      اللَّهُمَّ تَقَبَّلْ مِنَّا
+    </div>
+    <div class="dua-sub">
+      О Аллах, прими от нас
+    </div>
+    <button onclick="closeModal()">Аминь 🤲</button>
+  </div>
+</div>
+    
 <body>
 
 <h1>🕌 Трекер Намаза</h1>
