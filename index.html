@@ -3,84 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Мой день</title>
+<title>🌿 Мой день</title>
 
 <style>
+:root{
+  --bg:#f6f1eb;
+  --card:#ffffff;
+  --text:#4b3f35;
+  --soft:#8b7c6f;
+  --accent:#d6b46a;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
 body{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   max-width:420px;
   margin:0 auto;
   padding:20px;
-  background:#f6f1eb;
-  color:#4b3f35;
+  background:linear-gradient(180deg,#f6f1eb,#efe7dc);
+  color:var(--text);
+  min-height:100vh;
 }
 
-h1{text-align:center;margin-bottom:16px}
+h1{
+  text-align:center;
+  margin-bottom:18px;
+  font-weight:600;
+}
 
 .section{
-  background:#fff;
-  border-radius:18px;
-  padding:16px;
-  margin-bottom:16px;
+  background:var(--card);
+  border-radius:22px;
+  padding:18px;
+  margin-bottom:18px;
+  box-shadow:0 8px 24px rgba(0,0,0,.05);
+}
+
+/* DUA */
+.dua-ar{
+  font-size:22px;
+  line-height:1.9;
+  text-align:right;
+  direction:rtl;
+  margin-bottom:12px;
+}
+
+.dua-ru{
+  font-size:15px;
+  line-height:1.6;
+  text-align:center;
+  color:var(--soft);
 }
 
 /* CALENDAR */
 .calendar{
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  gap:8px;
+  gap:10px;
 }
 
 .cal-day{
   aspect-ratio:1;
   border:none;
-  border-radius:10px;
-  background:#eee6dc;
+  border-radius:14px;
+  background:#f1ebe4;
   font-size:14px;
+  font-weight:500;
+  color:var(--text);
 }
 
-.cal-day.done{background:#d6b46a;color:#fff}
+.cal-day.done{background:var(--accent);color:#fff}
 .cal-day.partial{background:#e6d6b8}
-.cal-day.today{outline:2px solid #d6b46a}
+.cal-day.today{outline:2px solid var(--accent)}
 
 /* MODAL */
 #modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.4);
+  background:rgba(0,0,0,.35);
   display:none;
+  z-index:10;
 }
 
 #modalBox{
-  background:#fff;
+  background:var(--card);
   position:absolute;
   bottom:0;
   width:100%;
   max-width:420px;
   left:50%;
   transform:translateX(-50%);
-  border-radius:20px 20px 0 0;
+  border-radius:26px 26px 0 0;
   padding:20px;
+  box-shadow:0 -10px 30px rgba(0,0,0,.15);
 }
 
 .prayer{
   display:flex;
   justify-content:space-between;
-  padding:12px 0;
-  border-bottom:1px solid #eee;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid rgba(0,0,0,.05);
+  font-size:15px;
 }
 
-.prayer.done{color:#999}
+.prayer.done{color:#9b8f84}
 
 button.action{
   width:100%;
-  margin-top:12px;
-  padding:10px;
+  margin-top:14px;
+  padding:12px;
   border:none;
-  border-radius:14px;
-  background:#d6b46a;
+  border-radius:18px;
+  background:var(--accent);
   color:#fff;
   font-weight:600;
+  font-size:15px;
+}
+
+.footer{
+  text-align:center;
+  font-size:12px;
+  color:var(--soft);
+  margin-top:10px;
 }
 </style>
 </head>
@@ -89,24 +135,57 @@ button.action{
 
 <h1>🌿 Мой день</h1>
 
+<!-- DUA -->
+<div class="section">
+  <div class="dua-ar" id="duaAr"></div>
+  <div class="dua-ru" id="duaRu"></div>
+</div>
+
+<!-- CALENDAR -->
 <div class="section">
   <div class="calendar" id="calendar"></div>
 </div>
 
-<div class="section" style="text-align:center;font-size:12px;color:#8b7c6f;">
+<div class="footer">
   created by Elizaveta Karahaliloğlu
 </div>
 
 <!-- MODAL -->
 <div id="modal">
   <div id="modalBox">
-    <h3 id="modalTitle" style="text-align:center;margin-bottom:10px;"></h3>
+    <h3 id="modalTitle" style="text-align:center;margin-bottom:12px;"></h3>
     <div id="modalContent"></div>
     <button class="action" onclick="closeModal()">Закрыть</button>
   </div>
 </div>
 
 <script>
+/* ---------- DUA ---------- */
+const duas = [
+  {
+    ar:"اللَّهُمَّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي",
+    ru:"О Аллах, раскрой моё сердце и облегчи мои дела."
+  },
+  {
+    ar:"اللَّهُمَّ إِنِّي أَسْأَلُكَ السَّكِينَةَ وَالرِّضَا",
+    ru:"О Аллах, даруй мне спокойствие и довольство."
+  },
+  {
+    ar:"رَبِّ زِدْنِي قُرْبًا مِنْكَ وَطُمَأْنِينَةً",
+    ru:"Господь мой, приблизь меня к Тебе и наполни сердце покоем."
+  },
+  {
+    ar:"اللَّهُمَّ بَارِكْ لِي فِي هَذَا الْيَوْمِ",
+    ru:"О Аллах, благослови для меня этот день."
+  }
+];
+
+const today = new Date().getDate();
+const dua = duas[today % duas.length];
+document.getElementById('duaAr').innerText = dua.ar;
+document.getElementById('duaRu').innerText = dua.ru;
+
+/* ---------- CALENDAR & PRAYERS ---------- */
 const prayers = [
   {key:'Fajr',name:'Фаджр'},
   {key:'Dhuhr',name:'Зухр'},
