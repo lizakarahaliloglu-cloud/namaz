@@ -37,6 +37,7 @@ body{
 
 .hidden{display:none}
 
+/* HEADER */
 .header{
   display:flex;
   justify-content:space-between;
@@ -44,10 +45,7 @@ body{
   margin-bottom:14px;
 }
 
-h1{
-  font-size:20px;
-  font-weight:600;
-}
+h1{font-size:20px;font-weight:600}
 
 .toggle{
   border:none;
@@ -55,9 +53,9 @@ h1{
   color:var(--text);
   border-radius:20px;
   padding:8px 14px;
-  font-size:14px;
 }
 
+/* SECTIONS */
 .section{
   background:var(--card);
   border-radius:22px;
@@ -66,6 +64,7 @@ h1{
   box-shadow:0 8px 24px rgba(0,0,0,.05);
 }
 
+/* PHRASE */
 .phrase{
   text-align:center;
   font-size:18px;
@@ -79,6 +78,7 @@ h1{
   text-align:center;
 }
 
+/* DUA */
 .dua-ar{
   font-size:22px;
   line-height:1.9;
@@ -93,16 +93,38 @@ h1{
   color:var(--soft);
 }
 
+/* PRAYERS (ВОЗВРАЩЁННЫЙ СТИЛЬ) */
 .prayer{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:14px 0;
-  border-bottom:1px solid rgba(0,0,0,.08);
+  padding:16px;
+  margin-bottom:14px;
+  border-radius:20px;
+  transition:.35s;
+  background:rgba(0,0,0,.04);
 }
 
-.prayer.done{color:var(--soft)}
+.prayer.active{
+  background:var(--card);
+  transform:scale(1.05);
+  box-shadow:0 6px 20px rgba(0,0,0,.1);
+}
 
+.prayer.done{
+  opacity:.45;
+  transform:scale(.96);
+}
+
+.prayer.next{
+  border:2px solid var(--accent);
+  box-shadow:0 0 22px rgba(214,180,106,.6);
+}
+
+.prayer-name{font-weight:600}
+.prayer-time{font-size:14px;color:var(--soft)}
+
+/* BUTTONS */
 button.main{
   width:100%;
   border:none;
@@ -111,9 +133,9 @@ button.main{
   background:var(--accent);
   color:#fff;
   font-weight:600;
-  font-size:15px;
 }
 
+/* CALENDAR */
 .calendar{
   display:grid;
   grid-template-columns:repeat(7,1fr);
@@ -126,6 +148,7 @@ button.main{
   border-radius:14px;
   background:rgba(0,0,0,.06);
   color:var(--text);
+  font-size:14px;
 }
 
 .cal-day.done{background:var(--accent);color:#fff}
@@ -150,6 +173,7 @@ button.main{
 
 <!-- МОЙ ДЕНЬ -->
 <div id="dayScreen">
+
   <div class="section">
     <div class="phrase" id="phraseText"></div>
     <div class="phrase-sub">Сегодня можно идти мягко</div>
@@ -160,7 +184,7 @@ button.main{
     <div class="dua-ru" id="duaRu"></div>
   </div>
 
-  <div class="section" id="todayPrayers"></div>
+  <div class="section" id="prayersBox"></div>
 
   <button class="main" onclick="openCalendar()">📅 Календарь</button>
 </div>
@@ -178,47 +202,23 @@ button.main{
 </div>
 
 <script>
-/* ---------- THEME ---------- */
-function applyTheme(){
-  const t = localStorage.getItem('theme');
-  if(t === 'dark') document.body.classList.add('dark');
-}
-applyTheme();
-
+/* THEME */
 function toggleTheme(){
   document.body.classList.toggle('dark');
-  localStorage.setItem(
-    'theme',
-    document.body.classList.contains('dark') ? 'dark' : 'light'
-  );
+  localStorage.setItem('theme',
+    document.body.classList.contains('dark')?'dark':'light');
+}
+if(localStorage.getItem('theme')==='dark'){
+  document.body.classList.add('dark');
 }
 
-/* ---------- DATA ---------- */
-const phrases=[
-  "Ты уже в нужном месте",
-  "Аллах видит даже тихие шаги",
-  "Сегодня достаточно быть",
-  "Спокойствие — тоже ибадат",
-  "Этот день уже благословлён"
-];
-
-const duas=[
-  {
-    ar:"اللَّهُمَّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي",
-    ru:"О Аллах, раскрой моё сердце и облегчи мои дела."
-  },
-  {
-    ar:"اللَّهُمَّ بَارِكْ لِي فِي هَذَا الْيَوْمِ",
-    ru:"О Аллах, благослови для меня этот день."
-  }
-];
-
+/* DATA */
 const prayers=[
-  {key:'Fajr',name:'Фаджр'},
-  {key:'Dhuhr',name:'Зухр'},
-  {key:'Asr',name:'Аср'},
-  {key:'Maghrib',name:'Магриб'},
-  {key:'Isha',name:'Иша'}
+  {key:'Fajr',name:'Фаджр',time:'05:30'},
+  {key:'Dhuhr',name:'Зухр',time:'13:10'},
+  {key:'Asr',name:'Аср',time:'16:45'},
+  {key:'Maghrib',name:'Магриб',time:'18:30'},
+  {key:'Isha',name:'Иша',time:'20:00'}
 ];
 
 function dateKey(d){
@@ -227,38 +227,83 @@ function dateKey(d){
     String(d.getDate()).padStart(2,'0');
 }
 
-const today=new Date();
-const todayKey=dateKey(today);
+let activeDate = dateKey(new Date());
 
-/* ---------- INIT ---------- */
-phraseText.innerText = "🌾 " + phrases[today.getDate()%phrases.length];
-const dua = duas[today.getDate()%duas.length];
-duaAr.innerText = dua.ar;
-duaRu.innerText = dua.ru;
+/* RENDER PRAYERS */
+function renderPrayers(){
+  const box = document.getElementById('prayersBox');
+  box.innerHTML = '';
+  const now = new Date();
 
-/* ---------- TODAY ---------- */
-function renderToday(){
-  todayPrayers.innerHTML='';
+  let nextFound = false;
+
   prayers.forEach(p=>{
-    const done=localStorage.getItem(todayKey+'_'+p.key);
-    const row=document.createElement('div');
-    row.className='prayer'+(done?' done':'');
-    row.innerHTML=`<span>${p.name}</span><span>${done?'✔':'◻'}</span>`;
-    row.onclick=()=>togglePrayer(todayKey,p.key);
-    todayPrayers.appendChild(row);
+    const key = activeDate+'_'+p.key;
+    const done = localStorage.getItem(key);
+
+    let cls = 'prayer';
+    if(done) cls += ' done';
+    else cls += ' active';
+
+    if(!done && !nextFound){
+      cls += ' next';
+      nextFound = true;
+    }
+
+    const div = document.createElement('div');
+    div.className = cls;
+    div.innerHTML = `
+      <div>
+        <div class="prayer-name">${p.name}</div>
+        <div class="prayer-time">${p.time}</div>
+      </div>
+      <div>${done?'✔':'◻'}</div>
+    `;
+    div.onclick = ()=>{
+      if(done) localStorage.removeItem(key);
+      else localStorage.setItem(key,'1');
+      renderPrayers();
+      renderCalendar();
+    };
+    box.appendChild(div);
   });
 }
 
-function togglePrayer(date,pKey){
-  const key=date+'_'+pKey;
-  localStorage.getItem(key)
-    ? localStorage.removeItem(key)
-    : localStorage.setItem(key,'1');
-  renderToday();
-  renderCalendar();
+/* CALENDAR */
+function renderCalendar(){
+  const cal = document.getElementById('calendar');
+  cal.innerHTML = '';
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = today.getMonth();
+  const days = new Date(y,m+1,0).getDate();
+
+  for(let d=1; d<=days; d++){
+    const date = new Date(y,m,d);
+    const key = dateKey(date);
+    let count = 0;
+    prayers.forEach(p=>{
+      if(localStorage.getItem(key+'_'+p.key)) count++;
+    });
+
+    const btn = document.createElement('button');
+    btn.className = 'cal-day';
+    if(count===5) btn.classList.add('done');
+    else if(count>0) btn.classList.add('partial');
+    if(d===today.getDate()) btn.classList.add('today');
+    btn.innerText = d;
+
+    btn.onclick = ()=>{
+      activeDate = key;
+      backToDay();
+      renderPrayers();
+    };
+
+    cal.appendChild(btn);
+  }
 }
 
-/* ---------- SCREENS ---------- */
+/* SCREENS */
 function openCalendar(){
   dayScreen.classList.add('hidden');
   calendarScreen.classList.remove('hidden');
@@ -269,32 +314,8 @@ function backToDay(){
   dayScreen.classList.remove('hidden');
 }
 
-/* ---------- CALENDAR ---------- */
-function renderCalendar(){
-  calendar.innerHTML='';
-  const y=today.getFullYear();
-  const m=today.getMonth();
-  const days=new Date(y,m+1,0).getDate();
-
-  for(let d=1;d<=days;d++){
-    const date=new Date(y,m,d);
-    const key=dateKey(date);
-    let count=0;
-    prayers.forEach(p=>{
-      if(localStorage.getItem(key+'_'+p.key)) count++;
-    });
-
-    const btn=document.createElement('button');
-    btn.className='cal-day';
-    if(count===5) btn.classList.add('done');
-    else if(count>0) btn.classList.add('partial');
-    if(d===today.getDate()) btn.classList.add('today');
-    btn.innerText=d;
-    calendar.appendChild(btn);
-  }
-}
-
-renderToday();
+/* INIT */
+renderPrayers();
 renderCalendar();
 </script>
 
