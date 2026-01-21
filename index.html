@@ -33,7 +33,7 @@ body{
   color:var(--text);
 }
 
-h1{text-align:center;margin-bottom:12px}
+h1{text-align:center;margin-bottom:14px;font-weight:600}
 
 .section{
   background:var(--card);
@@ -67,6 +67,7 @@ h1{text-align:center;margin-bottom:12px}
   justify-content:center;
   font-size:13px;
   cursor:pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cal-day.done{background:var(--accent);color:#fff}
@@ -75,12 +76,19 @@ h1{text-align:center;margin-bottom:12px}
 
 body.dark .cal-day{background:#2a2a2a}
 
-/* MODAL */
+/* MODAL — FIXED */
 #modal{
   position:fixed;
   inset:0;
-  display:none;
-  z-index:10;
+  z-index:100;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+
+#modal.active{
+  pointer-events:auto;
+  opacity:1;
 }
 
 #modalBg{
@@ -97,7 +105,7 @@ body.dark .cal-day{background:#2a2a2a}
   width:100%;
   max-width:420px;
   background:var(--card);
-  border-radius:24px 24px 0 0;
+  border-radius:26px 26px 0 0;
   padding:20px;
 }
 
@@ -141,24 +149,28 @@ body.dark .cal-day{background:#2a2a2a}
   <div id="modalBox">
     <div id="modalTitle" class="center" style="margin-bottom:12px;"></div>
     <div id="modalContent"></div>
-    <button onclick="closeModal()" style="width:100%;margin-top:12px;">Закрыть</button>
+    <button onclick="closeModal()" style="width:100%;margin-top:12px;">
+      Закрыть
+    </button>
   </div>
 </div>
 
 <script>
 const prayers=[
-{key:'Fajr',name:'Фаджр'},
-{key:'Dhuhr',name:'Зухр'},
-{key:'Asr',name:'Аср'},
-{key:'Maghrib',name:'Магриб'},
-{key:'Isha',name:'Иша'}
+  {key:'Fajr',name:'Фаджр'},
+  {key:'Dhuhr',name:'Зухр'},
+  {key:'Asr',name:'Аср'},
+  {key:'Maghrib',name:'Магриб'},
+  {key:'Isha',name:'Иша'}
 ];
 
 let viewDate=new Date();
 let activeDateKey='';
 
 function dateKey(d){
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  return d.getFullYear()+'-'+
+    String(d.getMonth()+1).padStart(2,'0')+'-'+
+    String(d.getDate()).padStart(2,'0');
 }
 
 function renderCalendar(){
@@ -166,24 +178,31 @@ function renderCalendar(){
   cal.innerHTML='';
   const y=viewDate.getFullYear();
   const m=viewDate.getMonth();
-  document.getElementById('monthTitle').innerText=
+
+  document.getElementById('monthTitle').innerText =
     viewDate.toLocaleString('ru',{month:'long',year:'numeric'});
 
   const days=new Date(y,m+1,0).getDate();
+
   for(let d=1;d<=days;d++){
     const date=new Date(y,m,d);
     const key=dateKey(date);
+
     let count=0;
     prayers.forEach(p=>{
-      if(localStorage.getItem(key+'_'+p.key))count++;
+      if(localStorage.getItem(key+'_'+p.key)) count++;
     });
 
     let cls='cal-day';
-    if(count===5)cls+=' done';
-    else if(count>0)cls+=' partial';
-    if(key===dateKey(new Date()))cls+=' today';
+    if(count===5) cls+=' done';
+    else if(count>0) cls+=' partial';
+    if(key===dateKey(new Date())) cls+=' today';
 
-    cal.innerHTML+=`<div class="${cls}" onclick="openDay('${key}',${d})">${d}</div>`;
+    const el=document.createElement('div');
+    el.className=cls;
+    el.textContent=d;
+    el.addEventListener('click',()=>openDay(key,d),{passive:true});
+    cal.appendChild(el);
   }
 }
 
@@ -194,23 +213,25 @@ function changeMonth(n){
 
 function openDay(key,day){
   activeDateKey=key;
-  document.getElementById('modal').style.display='block';
   document.getElementById('modalTitle').innerText='📅 '+day;
+  document.getElementById('modal').classList.add('active');
   renderDay();
 }
 
 function renderDay(){
-  let html='';
+  const cont=document.getElementById('modalContent');
+  cont.innerHTML='';
+
   prayers.forEach(p=>{
     const done=localStorage.getItem(activeDateKey+'_'+p.key);
-    html+=`
-      <div class="modal-prayer ${done?'done':''}"
-           onclick="togglePrayer('${p.key}')">
-        <span>${p.name}</span>
-        <span>${done?'✔':'◻'}</span>
-      </div>`;
+    const row=document.createElement('div');
+    row.className='modal-prayer'+(done?' done':'');
+    row.innerHTML=`<span>${p.name}</span><span>${done?'✔':'◻'}</span>`;
+    row.addEventListener('click',()=>{
+      togglePrayer(p.key);
+    });
+    cont.appendChild(row);
   });
-  document.getElementById('modalContent').innerHTML=html;
 }
 
 function togglePrayer(prayerKey){
@@ -222,7 +243,7 @@ function togglePrayer(prayerKey){
 }
 
 function closeModal(){
-  document.getElementById('modal').style.display='none';
+  document.getElementById('modal').classList.remove('active');
 }
 
 renderCalendar();
