@@ -28,7 +28,7 @@ body{
 
 h1{
   text-align:center;
-  margin-bottom:18px;
+  margin-bottom:14px;
   font-weight:600;
 }
 
@@ -40,20 +40,67 @@ h1{
   box-shadow:0 8px 24px rgba(0,0,0,.05);
 }
 
+/* PHRASE */
+.phrase{
+  text-align:center;
+  font-size:18px;
+  font-weight:500;
+}
+
+.phrase-sub{
+  margin-top:8px;
+  font-size:14px;
+  color:var(--soft);
+  text-align:center;
+}
+
 /* DUA */
 .dua-ar{
   font-size:22px;
   line-height:1.9;
   text-align:right;
   direction:rtl;
-  margin-bottom:12px;
+  margin-bottom:10px;
 }
 
 .dua-ru{
   font-size:15px;
-  line-height:1.6;
   text-align:center;
   color:var(--soft);
+}
+
+/* PRAYERS */
+.prayer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid rgba(0,0,0,.05);
+  font-size:15px;
+}
+
+.prayer.done{color:#9b8f84}
+
+.prayer span:last-child{
+  font-size:18px;
+}
+
+/* BUTTONS */
+button{
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  padding:12px;
+  border-radius:18px;
+  font-weight:600;
+  font-size:15px;
+  width:100%;
+}
+
+button.secondary{
+  background:#e6d6b8;
+  color:#4b3f35;
+  margin-top:10px;
 }
 
 /* CALENDAR */
@@ -69,64 +116,19 @@ h1{
   border-radius:14px;
   background:#f1ebe4;
   font-size:14px;
-  font-weight:500;
-  color:var(--text);
 }
 
 .cal-day.done{background:var(--accent);color:#fff}
 .cal-day.partial{background:#e6d6b8}
 .cal-day.today{outline:2px solid var(--accent)}
 
-/* MODAL */
-#modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.35);
-  display:none;
-  z-index:10;
-}
-
-#modalBox{
-  background:var(--card);
-  position:absolute;
-  bottom:0;
-  width:100%;
-  max-width:420px;
-  left:50%;
-  transform:translateX(-50%);
-  border-radius:26px 26px 0 0;
-  padding:20px;
-  box-shadow:0 -10px 30px rgba(0,0,0,.15);
-}
-
-.prayer{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px 0;
-  border-bottom:1px solid rgba(0,0,0,.05);
-  font-size:15px;
-}
-
-.prayer.done{color:#9b8f84}
-
-button.action{
-  width:100%;
-  margin-top:14px;
-  padding:12px;
-  border:none;
-  border-radius:18px;
-  background:var(--accent);
-  color:#fff;
-  font-weight:600;
-  font-size:15px;
-}
+.hidden{display:none}
 
 .footer{
   text-align:center;
   font-size:12px;
   color:var(--soft);
-  margin-top:10px;
+  margin-top:14px;
 }
 </style>
 </head>
@@ -135,44 +137,55 @@ button.action{
 
 <h1>🌿 Мой день</h1>
 
-<!-- DUA -->
-<div class="section">
-  <div class="dua-ar" id="duaAr"></div>
-  <div class="dua-ru" id="duaRu"></div>
+<!-- МОЙ ДЕНЬ -->
+<div id="dayScreen">
+
+  <div class="section">
+    <div class="phrase" id="phraseText"></div>
+    <div class="phrase-sub">Сегодня можно идти мягко</div>
+  </div>
+
+  <div class="section">
+    <div class="dua-ar" id="duaAr"></div>
+    <div class="dua-ru" id="duaRu"></div>
+  </div>
+
+  <div class="section" id="todayPrayers"></div>
+
+  <button onclick="openCalendar()">📅 Календарь</button>
+
 </div>
 
-<!-- CALENDAR -->
-<div class="section">
-  <div class="calendar" id="calendar"></div>
+<!-- КАЛЕНДАРЬ -->
+<div id="calendarScreen" class="hidden">
+
+  <div class="section">
+    <div class="calendar" id="calendar"></div>
+  </div>
+
+  <button class="secondary" onclick="backToDay()">← Назад</button>
+
 </div>
 
 <div class="footer">
   created by Elizaveta Karahaliloğlu
 </div>
 
-<!-- MODAL -->
-<div id="modal">
-  <div id="modalBox">
-    <h3 id="modalTitle" style="text-align:center;margin-bottom:12px;"></h3>
-    <div id="modalContent"></div>
-    <button class="action" onclick="closeModal()">Закрыть</button>
-  </div>
-</div>
-
 <script>
-/* ---------- DUA ---------- */
-const duas = [
+/* PHRASES */
+const phrases=[
+  "Ты уже в нужном месте",
+  "Аллах видит даже тихие шаги",
+  "Сегодня достаточно быть",
+  "Спокойствие — тоже ибадат",
+  "Этот день уже благословлён"
+];
+
+/* DUA */
+const duas=[
   {
     ar:"اللَّهُمَّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي",
     ru:"О Аллах, раскрой моё сердце и облегчи мои дела."
-  },
-  {
-    ar:"اللَّهُمَّ إِنِّي أَسْأَلُكَ السَّكِينَةَ وَالرِّضَا",
-    ru:"О Аллах, даруй мне спокойствие и довольство."
-  },
-  {
-    ar:"رَبِّ زِدْنِي قُرْبًا مِنْكَ وَطُمَأْنِينَةً",
-    ru:"Господь мой, приблизь меня к Тебе и наполни сердце покоем."
   },
   {
     ar:"اللَّهُمَّ بَارِكْ لِي فِي هَذَا الْيَوْمِ",
@@ -180,13 +193,7 @@ const duas = [
   }
 ];
 
-const today = new Date().getDate();
-const dua = duas[today % duas.length];
-document.getElementById('duaAr').innerText = dua.ar;
-document.getElementById('duaRu').innerText = dua.ru;
-
-/* ---------- CALENDAR & PRAYERS ---------- */
-const prayers = [
+const prayers=[
   {key:'Fajr',name:'Фаджр'},
   {key:'Dhuhr',name:'Зухр'},
   {key:'Asr',name:'Аср'},
@@ -194,77 +201,88 @@ const prayers = [
   {key:'Isha',name:'Иша'}
 ];
 
-let activeDate = '';
-
 function dateKey(d){
   return d.getFullYear()+'-'+
     String(d.getMonth()+1).padStart(2,'0')+'-'+
     String(d.getDate()).padStart(2,'0');
 }
 
-function renderCalendar(){
-  const cal = document.getElementById('calendar');
-  cal.innerHTML = '';
+const today=new Date();
+const todayKey=dateKey(today);
 
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = now.getMonth();
-  const days = new Date(y, m+1, 0).getDate();
+/* INIT */
+document.getElementById('phraseText').innerText =
+  "🌾 " + phrases[today.getDate()%phrases.length];
 
-  for(let d=1; d<=days; d++){
-    const date = new Date(y,m,d);
-    const key = dateKey(date);
+const dua=duas[today.getDate()%duas.length];
+document.getElementById('duaAr').innerText=dua.ar;
+document.getElementById('duaRu').innerText=dua.ru;
 
-    let count = 0;
-    prayers.forEach(p=>{
-      if(localStorage.getItem(key+'_'+p.key)) count++;
-    });
-
-    const btn = document.createElement('button');
-    btn.className = 'cal-day';
-    if(count===5) btn.classList.add('done');
-    else if(count>0) btn.classList.add('partial');
-    if(d===now.getDate()) btn.classList.add('today');
-
-    btn.textContent = d;
-    btn.onclick = () => openDay(key,d);
-    cal.appendChild(btn);
-  }
-}
-
-function openDay(key, day){
-  activeDate = key;
-  document.getElementById('modalTitle').innerText = '📅 ' + day;
-  document.getElementById('modal').style.display = 'block';
-  renderDay();
-}
-
-function renderDay(){
-  const box = document.getElementById('modalContent');
-  box.innerHTML = '';
-
+/* TODAY PRAYERS */
+function renderToday(){
+  const box=document.getElementById('todayPrayers');
+  box.innerHTML='';
   prayers.forEach(p=>{
-    const done = localStorage.getItem(activeDate+'_'+p.key);
-    const row = document.createElement('div');
-    row.className = 'prayer' + (done?' done':'');
-    row.innerHTML = `<span>${p.name}</span><span>${done?'✔':'◻'}</span>`;
-    row.onclick = () => togglePrayer(p.key);
+    const done=localStorage.getItem(todayKey+'_'+p.key);
+    const row=document.createElement('div');
+    row.className='prayer'+(done?' done':'');
+    row.innerHTML=`<span>${p.name}</span><span>${done?'✔':'◻'}</span>`;
+    row.onclick=()=>toggle(todayKey,p.key);
     box.appendChild(row);
   });
 }
 
-function togglePrayer(pKey){
-  const key = activeDate+'_'+pKey;
+/* TOGGLE */
+function toggle(date,pKey){
+  const key=date+'_'+pKey;
   if(localStorage.getItem(key)) localStorage.removeItem(key);
   else localStorage.setItem(key,'1');
-  renderDay();
+  renderToday();
   renderCalendar();
 }
 
-function closeModal(){
-  document.getElementById('modal').style.display='none';
+/* SCREENS */
+function openCalendar(){
+  document.getElementById('dayScreen').classList.add('hidden');
+  document.getElementById('calendarScreen').classList.remove('hidden');
 }
 
+function backToDay(){
+  document.getElementById('calendarScreen').classList.add('hidden');
+  document.getElementById('dayScreen').classList.remove('hidden');
+}
+
+/* CALENDAR */
+function renderCalendar(){
+  const cal=document.getElementById('calendar');
+  cal.innerHTML='';
+  const y=today.getFullYear();
+  const m=today.getMonth();
+  const days=new Date(y,m+1,0).getDate();
+
+  for(let d=1;d<=days;d++){
+    const date=new Date(y,m,d);
+    const key=dateKey(date);
+    let count=0;
+    prayers.forEach(p=>{
+      if(localStorage.getItem(key+'_'+p.key)) count++;
+    });
+
+    const btn=document.createElement('button');
+    btn.className='cal-day';
+    if(count===5) btn.classList.add('done');
+    else if(count>0) btn.classList.add('partial');
+    if(d===today.getDate()) btn.classList.add('today');
+
+    btn.innerText=d;
+    btn.onclick=()=>{
+      backToDay();
+    };
+    cal.appendChild(btn);
+  }
+}
+
+renderToday();
 renderCalendar();
 </script>
 
