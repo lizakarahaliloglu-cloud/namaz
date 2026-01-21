@@ -4,149 +4,81 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🌿 Мой день</title>
-
 <style>
 :root{
   --bg:#f6f1eb;
-  --card:#ffffff;
   --text:#4b3f35;
   --soft:#9b8f84;
   --accent:#d6b46a;
+  --glass:rgba(255,255,255,0.25);
 }
-
 body.dark{
   --bg:#1e2124;
-  --card:#2a2f33;
   --text:#e9e4dc;
   --soft:#a6a09a;
   --accent:#c9a857;
+  --glass:rgba(40,40,40,0.35);
 }
-
-*{margin:0;padding:0;box-sizing:border-box}
-
+*{margin:0;padding:0;box-sizing:border-box;}
 body{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   max-width:420px;
   margin:0 auto;
   padding:20px;
+  min-height:100vh;
   background:var(--bg);
   color:var(--text);
-  min-height:100vh;
   transition:.3s;
 }
-
-.hidden{display:none}
-
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-
-h1{font-size:20px;font-weight:600}
-
-.date{
-  text-align:center;
-  font-size:14px;
-  color:var(--soft);
-  margin-bottom:14px;
-}
-
-.toggle{
-  border:none;
-  background:var(--card);
-  padding:8px 14px;
-  border-radius:18px;
-}
-
-.section{
-  background:var(--card);
-  border-radius:22px;
-  padding:18px;
-  margin-bottom:18px;
-  box-shadow:0 10px 28px rgba(0,0,0,.06);
-}
-
-.dua-ar{
-  font-size:22px;
-  line-height:1.9;
-  text-align:right;
-  direction:rtl;
-  margin-bottom:8px;
-}
-
-.dua-ru{
-  font-size:14px;
-  text-align:center;
-  color:var(--soft);
-}
-
+.hidden{display:none;pointer-events:none;}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+h1{font-size:22px;font-weight:600}
+.toggle{border:none;background:none;color:var(--text);font-size:18px;}
+.date{font-size:14px;text-align:center;color:var(--soft);margin-bottom:14px;}
+.section{background:var(--glass);backdrop-filter:blur(15px);border-radius:22px;padding:18px;margin-bottom:18px;box-shadow:0 8px 24px rgba(0,0,0,.05);transition:.3s;}
+.dua-ar{font-size:22px;line-height:1.8;text-align:right;direction:rtl;margin-bottom:8px;}
+.dua-ru{font-size:15px;text-align:center;color:var(--soft);}
 .prayer{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:14px;
-  margin-bottom:12px;
-  border-radius:18px;
-  transition:.3s;
+  padding:16px;
+  margin-bottom:14px;
+  border-radius:22px;
+  cursor:pointer;
+  transition:.4s;
+  flex-direction:column;
+  gap:4px;
 }
-
-.prayer.future{
-  background:rgba(214,180,106,.18);
-}
-
+.prayer-name{font-weight:600;font-size:16px;text-align:center;}
+.prayer-time{font-size:14px;color:var(--soft);text-align:center;}
+.prayer span:last-child{font-size:20px;}
+.prayer.future{background:rgba(214,180,106,.12);}
+.prayer.done{opacity:.35;transform:scale(.96);}
 .prayer.next{
-  background:var(--card);
+  background:var(--glass);
   transform:scale(1.06);
-  box-shadow:0 0 26px rgba(214,180,106,.6);
+  box-shadow:0 0 28px rgba(214,180,106,.6);
+  animation:glow 2.5s infinite;
 }
-
-.prayer.done{
-  opacity:.4;
-  transform:scale(.96);
+@keyframes glow{
+  0%{box-shadow:0 0 8px rgba(214,180,106,.3);}
+  50%{box-shadow:0 0 22px rgba(214,180,106,.7);}
+  100%{box-shadow:0 0 8px rgba(214,180,106,.3);}
 }
-
-.prayer span:last-child{
-  font-size:18px;
-}
-
-.main{
-  width:100%;
-  border:none;
-  padding:14px;
-  border-radius:20px;
-  background:var(--accent);
-  color:#fff;
-  font-weight:600;
-}
-
-.calendar{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:10px;
-}
-
-.cal-day{
-  aspect-ratio:1;
-  border:none;
-  border-radius:14px;
-  background:rgba(0,0,0,.06);
-}
-
-.cal-day.full{background:var(--accent);color:#fff}
-.cal-day.part{background:rgba(214,180,106,.5)}
-.cal-day.today{outline:2px solid var(--accent)}
-
-.footer{
-  text-align:center;
-  font-size:12px;
-  color:var(--soft);
-  margin-top:16px;
-}
+.main{width:100%;border:none;padding:14px;border-radius:20px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;margin-bottom:12px;transition:.3s;}
+.main:hover{opacity:.9;}
+.calendar-nav{display:flex;justify-content:space-between;margin-bottom:10px;}
+.nav-btn{border:none;background:var(--glass);padding:6px 12px;border-radius:12px;cursor:pointer;}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;}
+.cal-day{aspect-ratio:1;border:none;border-radius:14px;background:rgba(0,0,0,.05);color:var(--text);font-size:14px;transition:.3s;}
+.cal-day.full{background:var(--accent);color:#fff;}
+.cal-day.part{background:rgba(214,180,106,.5);}
+.cal-day.today{outline:2px solid var(--accent);}
+.streak{text-align:center;color:var(--accent);margin-bottom:6px;font-size:14px;font-weight:500;}
+.footer{text-align:center;font-size:12px;color:var(--soft);margin-top:16px;}
 </style>
 </head>
-
 <body>
 
 <div class="header">
@@ -168,6 +100,12 @@ h1{font-size:20px;font-weight:600}
 </div>
 
 <div id="calendarScreen" class="hidden">
+  <div class="streak" id="streakText"></div>
+  <div class="calendar-nav">
+    <button class="nav-btn" onclick="prevMonth()">‹</button>
+    <div id="monthLabel"></div>
+    <button class="nav-btn" onclick="nextMonth()">›</button>
+  </div>
   <div class="section">
     <div class="calendar" id="calendar"></div>
   </div>
@@ -177,117 +115,129 @@ h1{font-size:20px;font-weight:600}
 <div class="footer">created by Elizaveta Karahaliloğlu</div>
 
 <script>
-/* ---------- STATE ---------- */
-let selectedDate = new Date();
-
-/* ---------- THEME ---------- */
+/* THEME */
 if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark');
 function toggleTheme(){
   document.body.classList.toggle('dark');
   localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');
 }
 
-/* ---------- DATE ---------- */
-function dateKey(d){
-  return d.toISOString().split('T')[0];
+/* DATE */
+let selectedDate=new Date();
+let calendarDate=new Date();
+const todayDate=document.getElementById('todayDate');
+function updateDateText(){
+  todayDate.innerText=selectedDate.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'});
 }
-todayDate.innerText = selectedDate.toLocaleDateString('ru-RU',{
-  weekday:'long',day:'numeric',month:'long'
-});
+updateDateText();
+function dateKey(d){return d.toISOString().split('T')[0];}
 
-/* ---------- DUA ---------- */
+/* DUA */
 const duas=[
   ["اللَّهُمَّ اشْرَحْ لِي صَدْرِي","О Аллах, раскрой моё сердце"],
   ["اللَّهُمَّ بَارِكْ لِي فِي هَذَا الْيَوْمِ","О Аллах, благослови этот день"],
-  ["رَبِّ زِدْنِي عِلْمًا","Господь, увеличь мои знания"]
+  ["رَبِّ زِدْنِي عِلْمًا","Господь, увеличь мои знания"],
+  ["اللَّهُمَّ اجعل هذا اليوم مباركًا","О Аллах, сделай этот день благословённым"],
+  ["اللَّهُمَّ احفظني","О Аллах, защити меня"]
 ];
 const dua=duas[selectedDate.getDate()%duas.length];
-duaAr.innerText=dua[0];
-duaRu.innerText=dua[1];
+document.getElementById('duaAr').innerText=dua[0];
+document.getElementById('duaRu').innerText=dua[1];
 
-/* ---------- PRAYERS ---------- */
-const prayersList=['Фаджр','Зухр','Аср','Магриб','Иша'];
-
+/* PRAYERS */
+let prayersList=['Фаджр','Зухр','Аср','Магриб','Иша'];
+let prayerTimes={};
+const prayersDiv=document.getElementById('prayers');
 function renderPrayers(){
-  prayers.innerHTML='';
+  prayersDiv.innerHTML='';
   const now=new Date();
   let nextShown=false;
 
   prayersList.forEach((p,i)=>{
     const key=dateKey(selectedDate)+'_'+i;
-    const done=localStorage.getItem(key);
-
+    const done = localStorage.getItem(key);
     let cls='prayer ';
     if(done) cls+='done';
     else if(!nextShown && selectedDate.toDateString()===now.toDateString()){
-      cls+='next';
-      nextShown=true;
+      cls+='next'; nextShown=true;
     } else cls+='future';
 
+    const timeKey=p.replace(/\s/g,'');
+    const time=prayerTimes[timeKey] || '--:--';
     const row=document.createElement('div');
     row.className=cls;
-    row.innerHTML=`<span>${p}</span><span>${done?'✔':'◻'}</span>`;
+    const randomHeight=120+Math.floor(Math.random()*40); // Pinterest effect
+    row.style.height=randomHeight+'px';
+    row.innerHTML=`<div class="prayer-name">${p}</div>
+                   <div class="prayer-time">${time}</div>
+                   <div>${done?'✔':'◻'}</div>`;
     row.onclick=()=>togglePrayer(key);
-    prayers.appendChild(row);
+    prayersDiv.appendChild(row);
   });
 }
-
 function togglePrayer(key){
-  localStorage.getItem(key)
-    ? localStorage.removeItem(key)
-    : localStorage.setItem(key,'1');
+  if(localStorage.getItem(key)) localStorage.removeItem(key);
+  else localStorage.setItem(key,'1');
   renderPrayers();
   renderCalendar();
 }
 
-/* ---------- CALENDAR ---------- */
+/* GEO + ALADHAN */
+function loadPrayerTimes(lat,lon){
+  fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=13`)
+    .then(res=>res.json())
+    .then(data=>{prayerTimes=data.data.timings;renderPrayers();})
+    .catch(err=>{prayerTimes={Fajr:'05:30',Dhuhr:'13:10',Asr:'16:45',Maghrib:'18:30',Isha:'20:00'};renderPrayers();});
+}
+if(navigator.geolocation){navigator.geolocation.getCurrentPosition(pos=>loadPrayerTimes(pos.coords.latitude,pos.coords.longitude),err=>loadPrayerTimes(41.01,28.97));}
+else loadPrayerTimes(41.01,28.97);
+
+/* CALENDAR + STREAK */
+const calendar=document.getElementById('calendar');
+const streakText=document.getElementById('streakText');
 function renderCalendar(){
   calendar.innerHTML='';
-  const y=selectedDate.getFullYear();
-  const m=selectedDate.getMonth();
+  const y=calendarDate.getFullYear();
+  const m=calendarDate.getMonth();
   const days=new Date(y,m+1,0).getDate();
-
+  let streak=0;
+  for(let i=0;i<days;i++){
+    const date=new Date(y,m,i+1);
+    let allDone=true;
+    prayersList.forEach((_,j)=>{if(!localStorage.getItem(dateKey(date)+'_'+j)) allDone=false;});
+    if(allDone && date<=new Date()) streak++;
+  }
+  streakText.innerText=`🔥 Стрик: ${streak} дней`;
   for(let d=1;d<=days;d++){
     const date=new Date(y,m,d);
     const key=dateKey(date);
     let count=0;
-    prayersList.forEach((_,i)=>{
-      if(localStorage.getItem(key+'_'+i)) count++;
-    });
-
+    prayersList.forEach((_,i)=>{if(localStorage.getItem(key+'_'+i)) count++;});
     const btn=document.createElement('button');
     btn.className='cal-day';
     if(count===5) btn.classList.add('full');
     else if(count>0) btn.classList.add('part');
     if(date.toDateString()===new Date().toDateString()) btn.classList.add('today');
     btn.innerText=d;
-
-    btn.onclick=()=>{
-      selectedDate=date;
-      backToToday();
-    };
+    btn.onclick=()=>{selectedDate=date;backToToday();};
     calendar.appendChild(btn);
   }
+  document.getElementById('monthLabel').innerText=calendarDate.toLocaleDateString('ru-RU',{month:'long',year:'numeric'});
 }
 
-/* ---------- NAV ---------- */
-function openCalendar(){
-  dayScreen.classList.add('hidden');
-  calendarScreen.classList.remove('hidden');
-}
-function backToToday(){
-  calendarScreen.classList.add('hidden');
-  dayScreen.classList.remove('hidden');
-  todayDate.innerText=selectedDate.toLocaleDateString('ru-RU',{
-    weekday:'long',day:'numeric',month:'long'
-  });
-  renderPrayers();
-}
+/* NAV MONTHS */
+function prevMonth(){calendarDate.setMonth(calendarDate.getMonth()-1);renderCalendar();}
+function nextMonth(){calendarDate.setMonth(calendarDate.getMonth()+1);renderCalendar();}
 
-/* ---------- INIT ---------- */
-renderPrayers();
+/* NAV SCREENS */
+const dayScreen=document.getElementById('dayScreen');
+const calendarScreen=document.getElementById('calendarScreen');
+function openCalendar(){dayScreen.classList.add('hidden');calendarScreen.classList.remove('hidden');}
+function backToToday(){calendarScreen.classList.add('hidden');dayScreen.classList.remove('hidden');updateDateText();renderPrayers();}
+
+/* INIT */
 renderCalendar();
+renderPrayers();
 </script>
-
 </body>
 </html>
