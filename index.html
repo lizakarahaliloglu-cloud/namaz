@@ -3,55 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🌿 Мой день</title>
+<title>Мой день</title>
 
 <style>
-:root{
-  --bg:#f6f1eb;
-  --card:#ffffff;
-  --text:#4b3f35;
-  --soft:#8b7c6f;
-  --accent:#d6b46a;
-}
-
-body.dark{
-  --bg:#121212;
-  --card:#1f1f1f;
-  --text:#e6e6e6;
-  --soft:#aaa;
-  --accent:#c9a24d;
-}
-
-*{margin:0;padding:0;box-sizing:border-box}
-
 body{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   max-width:420px;
   margin:0 auto;
   padding:20px;
-  background:var(--bg);
-  color:var(--text);
+  background:#f6f1eb;
+  color:#4b3f35;
 }
 
-h1{text-align:center;margin-bottom:14px;font-weight:600}
+h1{text-align:center;margin-bottom:16px}
 
 .section{
-  background:var(--card);
-  border-radius:20px;
+  background:#fff;
+  border-radius:18px;
   padding:16px;
   margin-bottom:16px;
 }
 
-.center{text-align:center}
-
 /* CALENDAR */
-.cal-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
-}
-
 .calendar{
   display:grid;
   grid-template-columns:repeat(7,1fr);
@@ -60,70 +33,54 @@ h1{text-align:center;margin-bottom:14px;font-weight:600}
 
 .cal-day{
   aspect-ratio:1;
-  border-radius:12px;
+  border:none;
+  border-radius:10px;
   background:#eee6dc;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:13px;
-  cursor:pointer;
-  -webkit-tap-highlight-color: transparent;
+  font-size:14px;
 }
 
-.cal-day.done{background:var(--accent);color:#fff}
+.cal-day.done{background:#d6b46a;color:#fff}
 .cal-day.partial{background:#e6d6b8}
-.cal-day.today{outline:2px solid var(--accent)}
+.cal-day.today{outline:2px solid #d6b46a}
 
-body.dark .cal-day{background:#2a2a2a}
-
-/* MODAL — FIXED */
+/* MODAL */
 #modal{
   position:fixed;
   inset:0;
-  z-index:100;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .25s ease;
-}
-
-#modal.active{
-  pointer-events:auto;
-  opacity:1;
-}
-
-#modalBg{
-  position:absolute;
-  inset:0;
   background:rgba(0,0,0,.4);
+  display:none;
 }
 
 #modalBox{
+  background:#fff;
   position:absolute;
   bottom:0;
-  left:50%;
-  transform:translateX(-50%);
   width:100%;
   max-width:420px;
-  background:var(--card);
-  border-radius:26px 26px 0 0;
+  left:50%;
+  transform:translateX(-50%);
+  border-radius:20px 20px 0 0;
   padding:20px;
 }
 
-.modal-prayer{
+.prayer{
   display:flex;
   justify-content:space-between;
-  padding:14px 0;
-  border-bottom:1px solid rgba(0,0,0,.05);
-  cursor:pointer;
+  padding:12px 0;
+  border-bottom:1px solid #eee;
 }
 
-.modal-prayer.done{color:var(--soft)}
+.prayer.done{color:#999}
 
-.footer{
-  text-align:center;
-  font-size:12px;
-  color:var(--soft);
-  margin-top:14px;
+button.action{
+  width:100%;
+  margin-top:12px;
+  padding:10px;
+  border:none;
+  border-radius:14px;
+  background:#d6b46a;
+  color:#fff;
+  font-weight:600;
 }
 </style>
 </head>
@@ -133,30 +90,24 @@ body.dark .cal-day{background:#2a2a2a}
 <h1>🌿 Мой день</h1>
 
 <div class="section">
-  <div class="cal-head">
-    <button onclick="changeMonth(-1)">‹</button>
-    <div id="monthTitle"></div>
-    <button onclick="changeMonth(1)">›</button>
-  </div>
   <div class="calendar" id="calendar"></div>
 </div>
 
-<div class="footer">created by Elizaveta Karahaliloğlu</div>
+<div class="section" style="text-align:center;font-size:12px;color:#8b7c6f;">
+  created by Elizaveta Karahaliloğlu
+</div>
 
 <!-- MODAL -->
 <div id="modal">
-  <div id="modalBg" onclick="closeModal()"></div>
   <div id="modalBox">
-    <div id="modalTitle" class="center" style="margin-bottom:12px;"></div>
+    <h3 id="modalTitle" style="text-align:center;margin-bottom:10px;"></h3>
     <div id="modalContent"></div>
-    <button onclick="closeModal()" style="width:100%;margin-top:12px;">
-      Закрыть
-    </button>
+    <button class="action" onclick="closeModal()">Закрыть</button>
   </div>
 </div>
 
 <script>
-const prayers=[
+const prayers = [
   {key:'Fajr',name:'Фаджр'},
   {key:'Dhuhr',name:'Зухр'},
   {key:'Asr',name:'Аср'},
@@ -164,8 +115,7 @@ const prayers=[
   {key:'Isha',name:'Иша'}
 ];
 
-let viewDate=new Date();
-let activeDateKey='';
+let activeDate = '';
 
 function dateKey(d){
   return d.getFullYear()+'-'+
@@ -174,68 +124,58 @@ function dateKey(d){
 }
 
 function renderCalendar(){
-  const cal=document.getElementById('calendar');
-  cal.innerHTML='';
-  const y=viewDate.getFullYear();
-  const m=viewDate.getMonth();
+  const cal = document.getElementById('calendar');
+  cal.innerHTML = '';
 
-  document.getElementById('monthTitle').innerText =
-    viewDate.toLocaleString('ru',{month:'long',year:'numeric'});
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const days = new Date(y, m+1, 0).getDate();
 
-  const days=new Date(y,m+1,0).getDate();
+  for(let d=1; d<=days; d++){
+    const date = new Date(y,m,d);
+    const key = dateKey(date);
 
-  for(let d=1;d<=days;d++){
-    const date=new Date(y,m,d);
-    const key=dateKey(date);
-
-    let count=0;
+    let count = 0;
     prayers.forEach(p=>{
       if(localStorage.getItem(key+'_'+p.key)) count++;
     });
 
-    let cls='cal-day';
-    if(count===5) cls+=' done';
-    else if(count>0) cls+=' partial';
-    if(key===dateKey(new Date())) cls+=' today';
+    const btn = document.createElement('button');
+    btn.className = 'cal-day';
+    if(count===5) btn.classList.add('done');
+    else if(count>0) btn.classList.add('partial');
+    if(d===now.getDate()) btn.classList.add('today');
 
-    const el=document.createElement('div');
-    el.className=cls;
-    el.textContent=d;
-    el.addEventListener('click',()=>openDay(key,d),{passive:true});
-    cal.appendChild(el);
+    btn.textContent = d;
+    btn.onclick = () => openDay(key,d);
+    cal.appendChild(btn);
   }
 }
 
-function changeMonth(n){
-  viewDate.setMonth(viewDate.getMonth()+n);
-  renderCalendar();
-}
-
-function openDay(key,day){
-  activeDateKey=key;
-  document.getElementById('modalTitle').innerText='📅 '+day;
-  document.getElementById('modal').classList.add('active');
+function openDay(key, day){
+  activeDate = key;
+  document.getElementById('modalTitle').innerText = '📅 ' + day;
+  document.getElementById('modal').style.display = 'block';
   renderDay();
 }
 
 function renderDay(){
-  const cont=document.getElementById('modalContent');
-  cont.innerHTML='';
+  const box = document.getElementById('modalContent');
+  box.innerHTML = '';
 
   prayers.forEach(p=>{
-    const done=localStorage.getItem(activeDateKey+'_'+p.key);
-    const row=document.createElement('div');
-    row.className='modal-prayer'+(done?' done':'');
-    row.innerHTML=`<span>${p.name}</span><span>${done?'✔':'◻'}</span>`;
-    row.addEventListener('click',()=>{
-      togglePrayer(p.key);
-    });
-    cont.appendChild(row);
+    const done = localStorage.getItem(activeDate+'_'+p.key);
+    const row = document.createElement('div');
+    row.className = 'prayer' + (done?' done':'');
+    row.innerHTML = `<span>${p.name}</span><span>${done?'✔':'◻'}</span>`;
+    row.onclick = () => togglePrayer(p.key);
+    box.appendChild(row);
   });
 }
 
-function togglePrayer(prayerKey){
-  const key=activeDateKey+'_'+prayerKey;
+function togglePrayer(pKey){
+  const key = activeDate+'_'+pKey;
   if(localStorage.getItem(key)) localStorage.removeItem(key);
   else localStorage.setItem(key,'1');
   renderDay();
@@ -243,7 +183,7 @@ function togglePrayer(prayerKey){
 }
 
 function closeModal(){
-  document.getElementById('modal').classList.remove('active');
+  document.getElementById('modal').style.display='none';
 }
 
 renderCalendar();
