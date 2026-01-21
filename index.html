@@ -7,278 +7,272 @@
 
 <meta name="theme-color" content="#f4efe9">
 
-<link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Мой день">
-<link rel="apple-touch-icon" href="icon-192.png">
-
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-
-:root {
-  --bg: linear-gradient(180deg,#f6f1eb,#efe7dc);
-  --card: rgba(255,255,255,0.78);
-  --text: #4b3f35;
-  --muted: #7a6a5c;
-  --accent: #d6b46a;
+:root{
+  --bg1:#f6f1eb;
+  --bg2:#efe7dc;
+  --card:#ffffffcc;
+  --text:#4b3f35;
+  --soft:#8b7c6f;
+  --accent:#d6b46a;
 }
 
-body.dark {
-  --bg: linear-gradient(180deg,#1e1e1e,#2a2a2a);
-  --card: rgba(40,40,40,0.9);
-  --text: #e6e6e6;
-  --muted: #b0b0b0;
-  --accent: #c9a85c;
+body.dark{
+  --bg1:#1e1e1e;
+  --bg2:#121212;
+  --card:#1f1f1f;
+  --text:#e6e6e6;
+  --soft:#aaa;
+  --accent:#c9a24d;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 20px;
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--text);
-  transition: background .4s,color .4s;
-}
+*{margin:0;padding:0;box-sizing:border-box}
 
-/* ---------- HEADER ---------- */
-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:14px;
-}
-
-h1 { font-weight:600; }
-
-.toggle {
-  background:none;
-  border:none;
-  font-size:20px;
-  cursor:pointer;
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  max-width:420px;
+  margin:0 auto;
+  padding:20px;
+  min-height:100vh;
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));
   color:var(--text);
 }
 
-/* ---------- SECTIONS ---------- */
-.section {
-  background: var(--card);
-  border-radius: 22px;
-  padding: 18px;
-  margin-bottom: 18px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.05);
+h1{text-align:center;margin-bottom:14px;font-weight:600}
+
+.section{
+  background:var(--card);
+  border-radius:22px;
+  padding:18px;
+  margin-bottom:18px;
+  box-shadow:0 8px 24px rgba(0,0,0,.05);
 }
 
-/* ---------- DAY ---------- */
-#dayPhrase { font-size:18px; text-align:center; }
-#daySub { font-size:14px; text-align:center; color:var(--muted); margin-top:8px; }
-.intention { text-align:center; font-size:15px; color:var(--muted); }
+.center{text-align:center}
 
-/* ---------- DUA ---------- */
-.dua-ar {
-  font-size:22px;
-  text-align:right;
-  direction:rtl;
-  margin-bottom:10px;
-}
-.dua-ru {
+.toggle{
   text-align:center;
-  font-size:15px;
-  color:var(--muted);
+  font-size:14px;
+  margin-bottom:10px;
+  cursor:pointer;
+  color:var(--soft);
 }
 
-/* ---------- CALENDAR ---------- */
-.cal-header {
+/* PHRASE */
+#dayPhrase{font-size:18px;font-weight:500;line-height:1.4}
+#daySub{font-size:14px;color:var(--soft);margin-top:6px}
+
+/* DUA */
+.dua-ar{font-size:22px;direction:rtl;text-align:right;line-height:1.8}
+.dua-ru{font-size:15px;color:var(--soft);text-align:center;margin-top:10px}
+
+/* PRAYER */
+.prayer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px;
+  border-radius:20px;
+  margin-bottom:14px;
+  transition:.3s;
+}
+
+.prayer.active{
+  background:#fff;
+  transform:scale(1.05);
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
+}
+
+body.dark .prayer.active{background:#2a2a2a}
+
+.prayer.done{
+  background:#e8e1d9;
+  color:#9b8f84;
+  transform:scale(.97);
+}
+
+body.dark .prayer.done{background:#2f2f2f}
+
+.prayer.next{
+  border:2px solid var(--accent);
+  box-shadow:0 0 20px rgba(214,180,106,.6);
+}
+
+button{
+  border:none;
+  padding:10px 16px;
+  border-radius:22px;
+  background:var(--accent);
+  color:#fff;
+  font-weight:600;
+}
+
+/* CALENDAR */
+.cal-head{
   display:flex;
   justify-content:space-between;
   align-items:center;
   margin-bottom:10px;
-  font-weight:500;
-}
-.cal-header button {
-  background:none;
-  border:none;
-  font-size:18px;
-  cursor:pointer;
-  color:var(--text);
 }
 
-.calendar {
+.calendar{
   display:grid;
   grid-template-columns:repeat(7,1fr);
   gap:8px;
 }
 
-.cal-day {
-  aspect-ratio:1/1;
+.cal-day{
+  aspect-ratio:1;
   border-radius:12px;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:13px;
   background:#f1ebe4;
-  color:#8a7c6f;
-}
-
-body.dark .cal-day {
-  background:#3a3a3a;
-  color:#bdbdbd;
-}
-
-.cal-day.done {
-  background:var(--accent);
-  color:#fff;
-  font-weight:600;
-}
-
-.cal-day.partial {
-  background:#e6d6b8;
-  color:#6f5f4f;
-}
-
-.cal-day.today {
-  outline:2px solid var(--accent);
-}
-
-/* ---------- PRAYER ---------- */
-.prayer {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:16px;
-  margin-bottom:14px;
-  border-radius:20px;
-  transition:.35s;
-}
-
-.prayer.active { background:#fff; transform:scale(1.05); }
-body.dark .prayer.active { background:#2f2f2f; }
-
-.prayer.done { background:#ebe4dc; opacity:.7; transform:scale(.97); }
-.prayer.past { opacity:.5; }
-
-.prayer.next {
-  border:2px solid var(--accent);
-  box-shadow:0 0 20px rgba(214,180,106,.6);
-}
-
-/* ---------- BUTTON ---------- */
-button.mark {
-  border:none;
-  padding:10px 16px;
-  border-radius:22px;
-  background:var(--accent);
-  color:#fff;
+  color:var(--soft);
   cursor:pointer;
 }
-button.checked { background:#bdb1a6; }
 
-/* ---------- FOOTER ---------- */
-footer {
+.cal-day.done{background:var(--accent);color:#fff}
+.cal-day.partial{background:#e6d6b8;color:#6f5f4f}
+.cal-day.today{outline:2px solid var(--accent)}
+
+body.dark .cal-day{background:#2a2a2a}
+
+/* MODAL */
+#dayModal{position:fixed;inset:0;display:none;z-index:100}
+#modalBg{position:absolute;inset:0;background:rgba(0,0,0,.4)}
+#modalBox{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:420px;
+  background:var(--card);
+  border-radius:26px 26px 0 0;
+  padding:20px;
+}
+
+.modal-prayer{
+  display:flex;
+  justify-content:space-between;
+  padding:12px 0;
+  border-bottom:1px solid rgba(0,0,0,.05);
+}
+
+.footer{
   text-align:center;
   font-size:12px;
-  color:var(--muted);
-  margin-top:20px;
+  color:var(--soft);
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>🌿 Мой день</h1>
-  <button class="toggle" onclick="toggleTheme()">🌙</button>
-</header>
+<h1>🌿 Мой день</h1>
 
-<div class="section">
+<div class="toggle" onclick="toggleTheme()">🌙 Ночной режим</div>
+
+<div class="section center">
   <div id="dayPhrase"></div>
   <div id="daySub">Сегодня можно идти медленно</div>
 </div>
 
-<div class="section">
-  <div class="intention">
-    Я совершаю намазы сегодня спокойно,<br>
-    с благодарностью и мягким сердцем.
-  </div>
+<div class="section center">
+  Я совершаю намазы сегодня спокойно,<br>с благодарностью и мягким сердцем.
 </div>
 
 <div class="section">
-  <div class="dua-ar"></div>
-  <div class="dua-ru"></div>
+  <div class="dua-ar">اللَّهُمَّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي</div>
+  <div class="dua-ru">О Аллах, раскрой моё сердце и облегчи мои дела.</div>
 </div>
 
 <div class="section">
-  <div class="cal-header">
-    <button onclick="changeMonth(-1)">←</button>
-    <div id="monthLabel"></div>
-    <button onclick="changeMonth(1)">→</button>
+  <div class="cal-head">
+    <button onclick="changeMonth(-1)">‹</button>
+    <div id="monthTitle"></div>
+    <button onclick="changeMonth(1)">›</button>
   </div>
   <div class="calendar" id="calendar"></div>
 </div>
 
 <div class="section" id="times"></div>
 
-<footer>
-  created by Elizaveta Karahaliloğlu
-</footer>
+<div class="footer">created by Elizaveta Karahaliloğlu</div>
+
+<!-- MODAL -->
+<div id="dayModal">
+  <div id="modalBg" onclick="closeModal()"></div>
+  <div id="modalBox">
+    <div id="modalTitle" class="center"></div>
+    <div id="modalContent"></div>
+    <button onclick="closeModal()" style="width:100%;margin-top:12px">Закрыть</button>
+  </div>
+</div>
 
 <script>
-/* ---------- THEME ---------- */
+const prayers=[
+{key:'Fajr',name:'Фаджр'},
+{key:'Dhuhr',name:'Зухр'},
+{key:'Asr',name:'Аср'},
+{key:'Maghrib',name:'Магриб'},
+{key:'Isha',name:'Иша'}
+];
+
+let viewDate=new Date();
+
+function getKey(d){
+return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
 function toggleTheme(){
-  document.body.classList.toggle('dark');
-  localStorage.setItem('theme',
-    document.body.classList.contains('dark')?'dark':'light');
-}
-if(localStorage.getItem('theme')==='dark'){
-  document.body.classList.add('dark');
+document.body.classList.toggle('dark');
+localStorage.setItem('theme',document.body.classList.contains('dark'));
 }
 
-/* ---------- PHRASES & DUA ---------- */
-const phrases=[
-"Ты уже в нужном месте",
-"Аллах видит даже тихие шаги",
-"Сегодня достаточно быть",
-"Спокойствие — тоже ибадат"
-];
-const duas=[
-{ar:"اللَّهُمَّ اشْرَحْ لِي صَدْرِي",ru:"О Аллах, раскрой моё сердце."},
-{ar:"اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ",ru:"О Аллах, помоги мне помнить Тебя."}
-];
-
-document.getElementById('dayPhrase').innerText =
-"🌾 "+phrases[new Date().getDate()%phrases.length];
-const d=duas[new Date().getDate()%duas.length];
-document.querySelector('.dua-ar').innerText=d.ar;
-document.querySelector('.dua-ru').innerText=d.ru;
-
-/* ---------- CALENDAR ---------- */
-let current=new Date();
-const prayers=['Fajr','Dhuhr','Asr','Maghrib','Isha'];
-
-function changeMonth(dir){
-  current.setMonth(current.getMonth()+dir);
-  renderCalendar();
-}
+if(localStorage.getItem('theme')==='true')document.body.classList.add('dark');
 
 function renderCalendar(){
-  const cal=document.getElementById('calendar');
-  cal.innerHTML='';
-  const y=current.getFullYear(), m=current.getMonth();
-  document.getElementById('monthLabel').innerText =
-    current.toLocaleString('ru',{month:'long',year:'numeric'});
-  const days=new Date(y,m+1,0).getDate();
-  for(let i=1;i<=days;i++){
-    const key=`${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-    let c=0;
-    prayers.forEach(p=>localStorage.getItem(`${key}_${p}`)&&c++);
-    let cls='cal-day';
-    if(c===5)cls+=' done';
-    else if(c>0)cls+=' partial';
-    if(i===new Date().getDate()&&m===new Date().getMonth())cls+=' today';
-    cal.innerHTML+=`<div class="${cls}">${i}</div>`;
-  }
+const cal=document.getElementById('calendar');
+cal.innerHTML='';
+const y=viewDate.getFullYear(),m=viewDate.getMonth();
+document.getElementById('monthTitle').innerText=
+viewDate.toLocaleString('ru',{month:'long',year:'numeric'});
+
+const days=new Date(y,m+1,0).getDate();
+for(let d=1;d<=days;d++){
+const date=new Date(y,m,d);
+const key=getKey(date);
+let done=0;
+prayers.forEach(p=>{if(localStorage.getItem(key+'_'+p.key))done++;});
+let cls='cal-day';
+if(done===5)cls+=' done';
+else if(done>0)cls+=' partial';
+if(key===getKey(new Date()))cls+=' today';
+cal.innerHTML+=`<div class="${cls}" onclick="openDay('${key}',${d})">${d}</div>`;
 }
+}
+
+function changeMonth(n){viewDate.setMonth(viewDate.getMonth()+n);renderCalendar();}
+
+function openDay(key,day){
+document.getElementById('dayModal').style.display='block';
+document.getElementById('modalTitle').innerText='📅 '+day;
+let html='';
+prayers.forEach(p=>{
+const done=localStorage.getItem(key+'_'+p.key);
+html+=`<div class="modal-prayer">
+<span>${p.name}</span><span>${done?'✔':'◻'}</span>
+</div>`;
+});
+document.getElementById('modalContent').innerHTML=html;
+}
+
+function closeModal(){document.getElementById('dayModal').style.display='none';}
+
 renderCalendar();
 </script>
 
