@@ -5,21 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🌿 Мой день</title>
 
-<meta name="theme-color" content="#f4efe9">
-
 <style>
 :root{
-  --bg1:#f6f1eb;
-  --bg2:#efe7dc;
-  --card:#ffffffcc;
+  --bg:#f6f1eb;
+  --card:#ffffff;
   --text:#4b3f35;
   --soft:#8b7c6f;
   --accent:#d6b46a;
 }
 
 body.dark{
-  --bg1:#1e1e1e;
-  --bg2:#121212;
+  --bg:#121212;
   --card:#1f1f1f;
   --text:#e6e6e6;
   --soft:#aaa;
@@ -33,79 +29,20 @@ body{
   max-width:420px;
   margin:0 auto;
   padding:20px;
-  min-height:100vh;
-  background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  background:var(--bg);
   color:var(--text);
 }
 
-h1{text-align:center;margin-bottom:14px;font-weight:600}
+h1{text-align:center;margin-bottom:12px}
 
 .section{
   background:var(--card);
-  border-radius:22px;
-  padding:18px;
-  margin-bottom:18px;
-  box-shadow:0 8px 24px rgba(0,0,0,.05);
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:16px;
 }
 
 .center{text-align:center}
-
-.toggle{
-  text-align:center;
-  font-size:14px;
-  margin-bottom:10px;
-  cursor:pointer;
-  color:var(--soft);
-}
-
-/* PHRASE */
-#dayPhrase{font-size:18px;font-weight:500;line-height:1.4}
-#daySub{font-size:14px;color:var(--soft);margin-top:6px}
-
-/* DUA */
-.dua-ar{font-size:22px;direction:rtl;text-align:right;line-height:1.8}
-.dua-ru{font-size:15px;color:var(--soft);text-align:center;margin-top:10px}
-
-/* PRAYER */
-.prayer{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:16px;
-  border-radius:20px;
-  margin-bottom:14px;
-  transition:.3s;
-}
-
-.prayer.active{
-  background:#fff;
-  transform:scale(1.05);
-  box-shadow:0 6px 20px rgba(0,0,0,.08);
-}
-
-body.dark .prayer.active{background:#2a2a2a}
-
-.prayer.done{
-  background:#e8e1d9;
-  color:#9b8f84;
-  transform:scale(.97);
-}
-
-body.dark .prayer.done{background:#2f2f2f}
-
-.prayer.next{
-  border:2px solid var(--accent);
-  box-shadow:0 0 20px rgba(214,180,106,.6);
-}
-
-button{
-  border:none;
-  padding:10px 16px;
-  border-radius:22px;
-  background:var(--accent);
-  color:#fff;
-  font-weight:600;
-}
 
 /* CALENDAR */
 .cal-head{
@@ -124,24 +61,34 @@ button{
 .cal-day{
   aspect-ratio:1;
   border-radius:12px;
+  background:#eee6dc;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:13px;
-  background:#f1ebe4;
-  color:var(--soft);
   cursor:pointer;
 }
 
 .cal-day.done{background:var(--accent);color:#fff}
-.cal-day.partial{background:#e6d6b8;color:#6f5f4f}
+.cal-day.partial{background:#e6d6b8}
 .cal-day.today{outline:2px solid var(--accent)}
 
 body.dark .cal-day{background:#2a2a2a}
 
 /* MODAL */
-#dayModal{position:fixed;inset:0;display:none;z-index:100}
-#modalBg{position:absolute;inset:0;background:rgba(0,0,0,.4)}
+#modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  z-index:10;
+}
+
+#modalBg{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.4);
+}
+
 #modalBox{
   position:absolute;
   bottom:0;
@@ -150,22 +97,25 @@ body.dark .cal-day{background:#2a2a2a}
   width:100%;
   max-width:420px;
   background:var(--card);
-  border-radius:26px 26px 0 0;
+  border-radius:24px 24px 0 0;
   padding:20px;
 }
 
 .modal-prayer{
   display:flex;
   justify-content:space-between;
-  padding:12px 0;
+  padding:14px 0;
   border-bottom:1px solid rgba(0,0,0,.05);
+  cursor:pointer;
 }
+
+.modal-prayer.done{color:var(--soft)}
 
 .footer{
   text-align:center;
   font-size:12px;
   color:var(--soft);
-  margin-top:10px;
+  margin-top:14px;
 }
 </style>
 </head>
@@ -173,22 +123,6 @@ body.dark .cal-day{background:#2a2a2a}
 <body>
 
 <h1>🌿 Мой день</h1>
-
-<div class="toggle" onclick="toggleTheme()">🌙 Ночной режим</div>
-
-<div class="section center">
-  <div id="dayPhrase"></div>
-  <div id="daySub">Сегодня можно идти медленно</div>
-</div>
-
-<div class="section center">
-  Я совершаю намазы сегодня спокойно,<br>с благодарностью и мягким сердцем.
-</div>
-
-<div class="section">
-  <div class="dua-ar">اللَّهُمَّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي</div>
-  <div class="dua-ru">О Аллах, раскрой моё сердце и облегчи мои дела.</div>
-</div>
 
 <div class="section">
   <div class="cal-head">
@@ -199,17 +133,15 @@ body.dark .cal-day{background:#2a2a2a}
   <div class="calendar" id="calendar"></div>
 </div>
 
-<div class="section" id="times"></div>
-
 <div class="footer">created by Elizaveta Karahaliloğlu</div>
 
 <!-- MODAL -->
-<div id="dayModal">
+<div id="modal">
   <div id="modalBg" onclick="closeModal()"></div>
   <div id="modalBox">
-    <div id="modalTitle" class="center"></div>
+    <div id="modalTitle" class="center" style="margin-bottom:12px;"></div>
     <div id="modalContent"></div>
-    <button onclick="closeModal()" style="width:100%;margin-top:12px">Закрыть</button>
+    <button onclick="closeModal()" style="width:100%;margin-top:12px;">Закрыть</button>
   </div>
 </div>
 
@@ -223,55 +155,75 @@ const prayers=[
 ];
 
 let viewDate=new Date();
+let activeDateKey='';
 
-function getKey(d){
-return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function dateKey(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
-
-function toggleTheme(){
-document.body.classList.toggle('dark');
-localStorage.setItem('theme',document.body.classList.contains('dark'));
-}
-
-if(localStorage.getItem('theme')==='true')document.body.classList.add('dark');
 
 function renderCalendar(){
-const cal=document.getElementById('calendar');
-cal.innerHTML='';
-const y=viewDate.getFullYear(),m=viewDate.getMonth();
-document.getElementById('monthTitle').innerText=
-viewDate.toLocaleString('ru',{month:'long',year:'numeric'});
+  const cal=document.getElementById('calendar');
+  cal.innerHTML='';
+  const y=viewDate.getFullYear();
+  const m=viewDate.getMonth();
+  document.getElementById('monthTitle').innerText=
+    viewDate.toLocaleString('ru',{month:'long',year:'numeric'});
 
-const days=new Date(y,m+1,0).getDate();
-for(let d=1;d<=days;d++){
-const date=new Date(y,m,d);
-const key=getKey(date);
-let done=0;
-prayers.forEach(p=>{if(localStorage.getItem(key+'_'+p.key))done++;});
-let cls='cal-day';
-if(done===5)cls+=' done';
-else if(done>0)cls+=' partial';
-if(key===getKey(new Date()))cls+=' today';
-cal.innerHTML+=`<div class="${cls}" onclick="openDay('${key}',${d})">${d}</div>`;
-}
+  const days=new Date(y,m+1,0).getDate();
+  for(let d=1;d<=days;d++){
+    const date=new Date(y,m,d);
+    const key=dateKey(date);
+    let count=0;
+    prayers.forEach(p=>{
+      if(localStorage.getItem(key+'_'+p.key))count++;
+    });
+
+    let cls='cal-day';
+    if(count===5)cls+=' done';
+    else if(count>0)cls+=' partial';
+    if(key===dateKey(new Date()))cls+=' today';
+
+    cal.innerHTML+=`<div class="${cls}" onclick="openDay('${key}',${d})">${d}</div>`;
+  }
 }
 
-function changeMonth(n){viewDate.setMonth(viewDate.getMonth()+n);renderCalendar();}
+function changeMonth(n){
+  viewDate.setMonth(viewDate.getMonth()+n);
+  renderCalendar();
+}
 
 function openDay(key,day){
-document.getElementById('dayModal').style.display='block';
-document.getElementById('modalTitle').innerText='📅 '+day;
-let html='';
-prayers.forEach(p=>{
-const done=localStorage.getItem(key+'_'+p.key);
-html+=`<div class="modal-prayer">
-<span>${p.name}</span><span>${done?'✔':'◻'}</span>
-</div>`;
-});
-document.getElementById('modalContent').innerHTML=html;
+  activeDateKey=key;
+  document.getElementById('modal').style.display='block';
+  document.getElementById('modalTitle').innerText='📅 '+day;
+  renderDay();
 }
 
-function closeModal(){document.getElementById('dayModal').style.display='none';}
+function renderDay(){
+  let html='';
+  prayers.forEach(p=>{
+    const done=localStorage.getItem(activeDateKey+'_'+p.key);
+    html+=`
+      <div class="modal-prayer ${done?'done':''}"
+           onclick="togglePrayer('${p.key}')">
+        <span>${p.name}</span>
+        <span>${done?'✔':'◻'}</span>
+      </div>`;
+  });
+  document.getElementById('modalContent').innerHTML=html;
+}
+
+function togglePrayer(prayerKey){
+  const key=activeDateKey+'_'+prayerKey;
+  if(localStorage.getItem(key)) localStorage.removeItem(key);
+  else localStorage.setItem(key,'1');
+  renderDay();
+  renderCalendar();
+}
+
+function closeModal(){
+  document.getElementById('modal').style.display='none';
+}
 
 renderCalendar();
 </script>
