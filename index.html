@@ -6,6 +6,7 @@
 <title>🌿 Мой день</title>
 
 <style>
+/* ---------- THEMES ---------- */
 :root{
   --bg:#f6f1eb;
   --card:#ffffff;
@@ -14,6 +15,15 @@
   --accent:#d6b46a;
 }
 
+body.dark{
+  --bg:#1f2326;
+  --card:#2a2f33;
+  --text:#e6e1db;
+  --soft:#a9a39c;
+  --accent:#caa85a;
+}
+
+/* ---------- BASE ---------- */
 *{margin:0;padding:0;box-sizing:border-box}
 
 body{
@@ -21,14 +31,15 @@ body{
   max-width:420px;
   margin:0 auto;
   padding:20px;
-  background:linear-gradient(180deg,#f6f1eb,#efe7dc);
+  background:var(--bg);
   color:var(--text);
   min-height:100vh;
+  transition:.35s;
 }
 
 h1{
   text-align:center;
-  margin-bottom:14px;
+  margin-bottom:12px;
   font-weight:600;
 }
 
@@ -38,9 +49,28 @@ h1{
   padding:18px;
   margin-bottom:18px;
   box-shadow:0 8px 24px rgba(0,0,0,.05);
+  transition:.35s;
 }
 
-/* PHRASE */
+/* ---------- HEADER ---------- */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+/* ---------- TOGGLE ---------- */
+.toggle{
+  border:none;
+  background:var(--card);
+  color:var(--text);
+  border-radius:20px;
+  padding:8px 14px;
+  font-size:14px;
+}
+
+/* ---------- PHRASE ---------- */
 .phrase{
   text-align:center;
   font-size:18px;
@@ -54,7 +84,7 @@ h1{
   text-align:center;
 }
 
-/* DUA */
+/* ---------- DUA ---------- */
 .dua-ar{
   font-size:22px;
   line-height:1.9;
@@ -69,41 +99,32 @@ h1{
   color:var(--soft);
 }
 
-/* PRAYERS */
+/* ---------- PRAYERS ---------- */
 .prayer{
   display:flex;
   justify-content:space-between;
   align-items:center;
   padding:14px 0;
-  border-bottom:1px solid rgba(0,0,0,.05);
-  font-size:15px;
+  border-bottom:1px solid rgba(0,0,0,.08);
 }
 
-.prayer.done{color:#9b8f84}
+.prayer.done{color:var(--soft)}
 
-.prayer span:last-child{
-  font-size:18px;
-}
+.prayer span:last-child{font-size:18px}
 
-/* BUTTONS */
-button{
+/* ---------- BUTTON ---------- */
+button.main{
+  width:100%;
   border:none;
-  background:var(--accent);
-  color:#fff;
   padding:12px;
   border-radius:18px;
+  background:var(--accent);
+  color:#fff;
   font-weight:600;
   font-size:15px;
-  width:100%;
 }
 
-button.secondary{
-  background:#e6d6b8;
-  color:#4b3f35;
-  margin-top:10px;
-}
-
-/* CALENDAR */
+/* ---------- CALENDAR ---------- */
 .calendar{
   display:grid;
   grid-template-columns:repeat(7,1fr);
@@ -114,12 +135,13 @@ button.secondary{
   aspect-ratio:1;
   border:none;
   border-radius:14px;
-  background:#f1ebe4;
+  background:rgba(0,0,0,.06);
+  color:var(--text);
   font-size:14px;
 }
 
 .cal-day.done{background:var(--accent);color:#fff}
-.cal-day.partial{background:#e6d6b8}
+.cal-day.partial{background:rgba(214,180,106,.45)}
 .cal-day.today{outline:2px solid var(--accent)}
 
 .hidden{display:none}
@@ -135,7 +157,10 @@ button.secondary{
 
 <body>
 
-<h1>🌿 Мой день</h1>
+<div class="header">
+  <h1>🌿 Мой день</h1>
+  <button class="toggle" onclick="toggleTheme()">🌙</button>
+</div>
 
 <!-- МОЙ ДЕНЬ -->
 <div id="dayScreen">
@@ -152,19 +177,16 @@ button.secondary{
 
   <div class="section" id="todayPrayers"></div>
 
-  <button onclick="openCalendar()">📅 Календарь</button>
+  <button class="main" onclick="openCalendar()">📅 Календарь</button>
 
 </div>
 
 <!-- КАЛЕНДАРЬ -->
 <div id="calendarScreen" class="hidden">
-
   <div class="section">
     <div class="calendar" id="calendar"></div>
   </div>
-
-  <button class="secondary" onclick="backToDay()">← Назад</button>
-
+  <button class="main" onclick="backToDay()">← Назад</button>
 </div>
 
 <div class="footer">
@@ -172,7 +194,17 @@ button.secondary{
 </div>
 
 <script>
-/* PHRASES */
+/* ---------- THEME ---------- */
+function toggleTheme(){
+  document.body.classList.toggle('dark');
+  localStorage.setItem('theme',
+    document.body.classList.contains('dark')?'dark':'light');
+}
+if(localStorage.getItem('theme')==='dark'){
+  document.body.classList.add('dark');
+}
+
+/* ---------- DATA ---------- */
 const phrases=[
   "Ты уже в нужном месте",
   "Аллах видит даже тихие шаги",
@@ -181,7 +213,6 @@ const phrases=[
   "Этот день уже благословлён"
 ];
 
-/* DUA */
 const duas=[
   {
     ar:"اللَّهُمَّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي",
@@ -210,7 +241,7 @@ function dateKey(d){
 const today=new Date();
 const todayKey=dateKey(today);
 
-/* INIT */
+/* ---------- INIT ---------- */
 document.getElementById('phraseText').innerText =
   "🌾 " + phrases[today.getDate()%phrases.length];
 
@@ -218,7 +249,7 @@ const dua=duas[today.getDate()%duas.length];
 document.getElementById('duaAr').innerText=dua.ar;
 document.getElementById('duaRu').innerText=dua.ru;
 
-/* TODAY PRAYERS */
+/* ---------- TODAY ---------- */
 function renderToday(){
   const box=document.getElementById('todayPrayers');
   box.innerHTML='';
@@ -232,7 +263,6 @@ function renderToday(){
   });
 }
 
-/* TOGGLE */
 function toggle(date,pKey){
   const key=date+'_'+pKey;
   if(localStorage.getItem(key)) localStorage.removeItem(key);
@@ -241,18 +271,17 @@ function toggle(date,pKey){
   renderCalendar();
 }
 
-/* SCREENS */
+/* ---------- SCREENS ---------- */
 function openCalendar(){
-  document.getElementById('dayScreen').classList.add('hidden');
-  document.getElementById('calendarScreen').classList.remove('hidden');
+  dayScreen.classList.add('hidden');
+  calendarScreen.classList.remove('hidden');
 }
-
 function backToDay(){
-  document.getElementById('calendarScreen').classList.add('hidden');
-  document.getElementById('dayScreen').classList.remove('hidden');
+  calendarScreen.classList.add('hidden');
+  dayScreen.classList.remove('hidden');
 }
 
-/* CALENDAR */
+/* ---------- CALENDAR ---------- */
 function renderCalendar(){
   const cal=document.getElementById('calendar');
   cal.innerHTML='';
@@ -273,11 +302,7 @@ function renderCalendar(){
     if(count===5) btn.classList.add('done');
     else if(count>0) btn.classList.add('partial');
     if(d===today.getDate()) btn.classList.add('today');
-
     btn.innerText=d;
-    btn.onclick=()=>{
-      backToDay();
-    };
     cal.appendChild(btn);
   }
 }
